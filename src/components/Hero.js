@@ -128,8 +128,8 @@ export default function Hero() {
             </a>
 
             <a
-              href="/CV.pdf"
-              download="CV.pdf"
+              href="/ProCV.pdf"
+              download="ProCV.pdf"
               className="btn download-btn"
               onClick={handleDownload}
             >
