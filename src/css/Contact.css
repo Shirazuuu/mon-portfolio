@@ -1,0 +1,212 @@
+.contact-container {
+    padding: 60px 10%;
+    background: #0f0f0f;
+    /* fond noir */
+    color: #fff;
+    /* texte blanc */
+}
+
+/* Titre Restons en Contact */
+.contact-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.contact-header h2 {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.contact-header h2 span {
+    color: #a020f0;
+    /* accent violet */
+}
+
+.contact-header p {
+    font-size: 1.2rem;
+    color: #ccc;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Grille de contact */
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+h2 span {
+    color: #a020f0;
+    /* accent violet */
+}
+
+/* Boîtes infos */
+.info-box {
+    display: block;
+    background: #1e1e1e;
+    /* gris foncé */
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    text-decoration: none;
+    color: #fff;
+    transition: 0.3s;
+}
+
+.info-box:hover {
+    opacity: 0.8;
+    transform: translateY(-2px);
+    border-left: 4px solid #a020f0;
+    /* effet violet au hover */
+}
+
+.info-box b {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 1.1rem;
+    color: #a020f0;
+    /* accent violet */
+}
+
+/* Disponibilité */
+.availability {
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 12px;
+    color: #fff;
+}
+
+.availability h4 {
+    margin-bottom: 10px;
+    color: #a020f0;
+}
+
+.status {
+    margin-top: 10px;
+    background: rgba(160, 32, 240, 0.15);
+    /* violet translucide */
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 500;
+    color: #a020f0;
+}
+
+/* Formulaire */
+.contact-form {
+    background: #1e1e1e;
+    padding: 25px;
+    border-radius: 12px;
+    color: #fff;
+}
+
+.contact-form h2 {
+    margin-bottom: 20px;
+}
+
+.form-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    background: #0f0f0f;
+    color: #fff;
+}
+
+.contact-form input::placeholder,
+.contact-form textarea::placeholder {
+    color: #aaa;
+    /* placeholders gris clair */
+}
+
+.contact-form textarea {
+    resize: none;
+    margin-bottom: 15px;
+}
+
+.contact-form button {
+    background: linear-gradient(90deg, #a020f0, #e940ff);
+    color: #fff;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 1rem;
+    transition: 0.3s;
+}
+
+.contact-form button:hover {
+    opacity: 0.9;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group {
+        flex-direction: column;
+    }
+}
+
+/* Bouton glitch */
+.btn {
+    position: relative;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    background: none;
+    border: 2px solid #a020f0;
+    border-radius: 8px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.glitch {
+    text-shadow: 0.05em 0 0 rgba(255, 0, 0, 0.75),
+        -0.025em -0.05em 0 rgba(0, 255, 0, 0.75),
+        0.025em 0.05em 0 rgba(0, 0, 255, 0.75);
+}
+
+.glitch:hover {
+    animation: glitch 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+}
+
+@keyframes glitch {
+    0% {
+        transform: translate(0);
+    }
+
+    20% {
+        transform: translate(-4px, 4px);
+    }
+
+    40% {
+        transform: translate(-4px, -4px);
+    }
+
+    60% {
+        transform: translate(4px, 4px);
+    }
+
+    80% {
+        transform: translate(4px, -4px);
+    }
+
+    100% {
+        transform: translate(0);
+    }
+}
