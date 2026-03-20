@@ -1,139 +1,173 @@
-/* ======= NAVBAR ======= */
 .navbar {
-    width: 100%;
-    padding: 1rem 2rem;
-    /* padding à gauche et droite */
-    margin-right: 0;
-    /* forcer à rester à l’écran */
-    display: flex;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    background: rgba(0, 0, 0, 0.85);
-    z-index: 10000;
-    box-sizing: border-box;
-    /* très important pour le padding */
-    transition: transform 0.3s ease-in-out;
+  width: 100%;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  background: var(--nav-bg);
+  z-index: 10000;
+  box-sizing: border-box;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
-/* Scroll behavior */
+/* Ombre légère en mode clair */
+.navbar.light-mode {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
 .navbar.hide {
-    transform: translateY(-100%);
+  transform: translateY(-100%);
 }
 
 .navbar.show {
-    transform: translateY(0);
+  transform: translateY(0);
 }
 
-/* ======= LOGO ======= */
 .logo {
-    display: flex;
-    align-items: center;
-    margin-right: auto;
+  display: flex;
+  align-items: center;
+  margin-right: auto;
+  position: relative; /* nécessaire pour superposer les logos */
+  height: 45px;
 }
 
 .logo img {
-    height: 45px;
-    width: auto;
-    object-fit: contain;
+  height: 45px;
+  width: auto;
+  object-fit: contain;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
 }
 
-/* ======= LINKS ======= */
+/* Logo effet scale léger pour transition */
+.logo img.fade-logo {
+  transform: scale(1);
+}
+
+.logo img.fade-logo.show {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.logo img.fade-logo.hide {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
 .nav-links {
-    list-style: none;
-    display: flex;
-    gap: 2rem;
-    align-items: center;
-    justify-content: center;
-    padding-right: 2rem;
-    /* padding pour rester calé à droite */
-    box-sizing: border-box;
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  justify-content: center;
+  padding-right: 2rem;
+  box-sizing: border-box;
 }
 
 .nav-links li a {
-    color: white;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.3s;
+  color: var(--nav-text);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
 }
 
 .nav-links li a:hover {
-    color: #a020f0;
+  color: var(--link-hover);
 }
 
-/* ======= BURGER ======= */
+.dark-toggle {
+  font-size: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 15px;
+  color: inherit;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.dark-toggle:hover {
+  transform: scale(1.2);
+}
+
 .burger {
-    display: none;
-    cursor: pointer;
-    flex-direction: column;
-    gap: 5px;
-    z-index: 10001;
-    /* au-dessus du menu */
-    background: none;
-    border: none;
+  display: none;
+  cursor: pointer;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 10001;
+  background: none;
+  border: none;
 }
 
 .burger div {
-    width: 25px;
-    height: 3px;
-    background-color: white;
-    transition: all 0.3s ease;
+  width: 25px;
+  height: 3px;
+  background-color: var(--nav-text);
+  transition: all 0.3s ease;
 }
 
-/* ======= BURGER ANIMATION ======= */
 .burger.toggle .line1 {
-    transform: rotate(-45deg) translate(-5px, 6px);
+  transform: rotate(-45deg) translate(-5px, 6px);
 }
 
 .burger.toggle .line2 {
-    opacity: 0;
+  opacity: 0;
 }
 
 .burger.toggle .line3 {
-    transform: rotate(45deg) translate(-5px, -6px);
+  transform: rotate(45deg) translate(-5px, -6px);
 }
 
-/* ======= RESPONSIVE ======= */
 @media (max-width: 768px) {
+  .logo {
+    height: 38px;
+  }
 
-    .logo img {
-        height: 38px;
-    }
+  .logo img {
+    height: 38px;
+  }
 
-    /* Menu mobile */
-    .nav-links {
-        position: fixed;
-        top: 0;
-        right: 0;
-        height: 100vh;
-        width: 100%;
-        background: #000;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        transform: translateX(100%);
-        transition: transform 0.3s ease-in-out;
-        z-index: 9999;
-        gap: 2rem;
-        padding-right: 1.5rem;
-        /* espace intérieur à droite */
-        box-sizing: border-box;
-    }
+  .nav-links {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 100%;
+    background: var(--nav-bg);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 9999;
+    gap: 2rem;
+    padding-right: 1.5rem;
+    box-sizing: border-box;
+  }
 
-    .nav-links.open {
-        transform: translateX(0);
-    }
+  .nav-links.open {
+    transform: translateX(0);
+  }
 
-    /* Burger visible */
-    .burger {
-        display: flex;
-        position: fixed;
-        top: 20px;
-        right: 20px;
-    }
+  .burger {
+    display: flex;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+  }
 
-    /* Bloquer scroll quand menu ouvert */
-    body.menu-open {
-        overflow: hidden;
-    }
+  /* Décaler le dark toggle pour éviter conflit avec burger */
+  .dark-toggle {
+    position: fixed;
+    top: 20px;
+    right: 65px;
+  }
+
+  body.menu-open {
+    overflow: hidden;
+  }
+  
 }

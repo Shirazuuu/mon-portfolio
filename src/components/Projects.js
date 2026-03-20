@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import "../css/Projects.css";
 
 const modalBtnStyle = {
@@ -13,7 +14,10 @@ const modalBtnStyle = {
 
 // Modal vidéo
 const ProjectVideoModal = ({ videoSrc, onClose }) => (
-  <div
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
     style={{
       position: "fixed",
       top: 0,
@@ -35,7 +39,7 @@ const ProjectVideoModal = ({ videoSrc, onClose }) => (
       style={{ maxWidth: "90%", maxHeight: "80%", borderRadius: "12px" }}
       onClick={(e) => e.stopPropagation()}
     />
-  </div>
+  </motion.div>
 );
 
 // Modal images
@@ -53,7 +57,10 @@ const ProjectImagesModal = ({ images, onClose }) => {
   };
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       style={{
         position: "fixed",
         top: 0,
@@ -74,8 +81,8 @@ const ProjectImagesModal = ({ images, onClose }) => {
         alt="project"
         style={{ maxWidth: "90%", maxHeight: "80%", borderRadius: "12px" }}
         onClick={(e) => e.stopPropagation()}
+        loading="lazy"
       />
-
       {images.length > 1 && (
         <div style={{ marginTop: "15px", display: "flex", gap: "20px" }}>
           <button onClick={prevImage} style={modalBtnStyle}>
@@ -86,52 +93,20 @@ const ProjectImagesModal = ({ images, onClose }) => {
           </button>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
 
 const Projects = () => {
+  const [projects, setProjects] = useState([]);
   const [modalVideo, setModalVideo] = useState(null);
   const [modalImages, setModalImages] = useState(null);
 
-  const projects = [
-    {
-      id: 1,
-      categories: ["Web"],
-      title: "E-congé : Application de gestion des absences",
-      description:
-        "Application web permettant la gestion des employés et des congés.",
-      tags: ["PHP", "MySQL", "Gestion RH"],
-      github: "https://github.com/Tommy-ZzZ/Gestion-des-employ-et-cong-personnel",
-      image: "/e-conge/1.png",
-      images: ["/e-conge/1.png", "/e-conge/2.png", "/e-conge/3.png", "/e-conge/4.png", "/e-conge/5.png"],
-      video: "/e-conge/demo.mp4",
-    },
-    {
-      id: 2,
-      categories: ["Web", "Mobile"],
-      title: "E-Pharma : Application de gestion pharmaceutique",
-      description:
-        "Application web et mobile développée avec React, React Native et PostgreSQL.",
-      tags: ["React", "React Native", "PostgreSQL"],
-      github: "https://github.com/Tommy-ZzZ/Mon-projet-Pharma",
-      image: "/pharma/1.png",
-      images: ["/pharma/1.png", "/pharma/2.png", "/pharma/3.png", "/pharma/11.png"],
-      video: "/pharma/pharma.mp4",
-    },
-    {
-      id: 3,
-      categories: ["Web"],
-      title: "E-Notes : Gestion des Notes",
-      description: "Site web moderne et responsive conçu avec React.",
-      tags: ["React", "CSS", "Responsive"],
-      github: "https://github.com/Tommy-ZzZ/Gestion-notes",
-      image: "/notes/1.png",
-      images: ["/notes/1.png", "/notes/2.png", "/notes/3.png", "/notes/4.png"],
-      video: "/notes/note.mp4",
-      demo: "#",
-    },
-  ];
+  useEffect(() => {
+    fetch("/data/projects.json")
+      .then((res) => res.json())
+      .then((data) => setProjects(data));
+  }, []);
 
   return (
     <section className="projects">
@@ -139,55 +114,91 @@ const Projects = () => {
         Mes <span>Projets</span>
       </h2>
 
-      <div className="projects-grid">
-        {projects.map((project) => (
-          <div key={project.id} className="project-card">
-            <div className="card-header">
-              <span className="badge">{project.categories.join(" / ")}</span>
-              <img
-                src={project.image}
-                alt={project.title}
-                style={{ cursor: project.images ? "pointer" : "default" }}
-                onClick={() => project.images && setModalImages(project.images)}
-              />
-            </div>
-
-            <div className="card-body">
-              <h3>{project.title}</h3>
-              <p>{project.description}</p>
-
-              <div className="tags">
-                {project.tags.map((tag, index) => (
-                  <span key={index} className="tag">
-                    {tag}
-                  </span>
-                ))}
+      <motion.div
+        className="projects-grid"
+        initial="hidden"
+        animate="visible"
+        variants={{
+          hidden: {},
+          visible: { transition: { staggerChildren: 0.15 } },
+        }}
+      >
+        <AnimatePresence>
+          {projects.map((project) => (
+            <motion.div
+              key={project.id}
+              className="project-card"
+              whileHover={{ scale: 1.03, y: -5 }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="card-header">
+                <span className="badge">{project.categories.join(" / ")}</span>
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  style={{ cursor: project.images ? "pointer" : "default" }}
+                  onClick={() =>
+                    project.images && setModalImages(project.images)
+                  }
+                  loading="lazy"
+                />
               </div>
 
-              {project.video && (
-                <button className="demo-btn" onClick={() => setModalVideo(project.video)}>
-                  🎯 Démo en Vidéo
-                </button>
-              )}
+              <div className="card-body">
+                <h3>{project.title}</h3>
+                <p>{project.description}</p>
 
-              {project.github && (
-                <a
-                  href={project.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="demo-btn"
-                  style={{ marginLeft: "10px", background: "#444" }}
-                >
-                  💻 GitHub
-                </a>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
+                <div className="tags">
+                  {project.tags.map((tag, index) => (
+                    <span key={index} className="tag">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
 
-      {modalVideo && <ProjectVideoModal videoSrc={modalVideo} onClose={() => setModalVideo(null)} />}
-      {modalImages && <ProjectImagesModal images={modalImages} onClose={() => setModalImages(null)} />}
+                {project.video && (
+                  <button
+                    className="demo-btn"
+                    onClick={() => setModalVideo(project.video)}
+                  >
+                    🎯 Démo en Vidéo
+                  </button>
+                )}
+
+                {project.github && (
+                  <a
+                    href={project.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="demo-btn"
+                    style={{ marginLeft: "10px", background: "#444" }}
+                  >
+                    💻 GitHub
+                  </a>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </motion.div>
+
+      <AnimatePresence>
+        {modalVideo && (
+          <ProjectVideoModal
+            videoSrc={modalVideo}
+            onClose={() => setModalVideo(null)}
+          />
+        )}
+        {modalImages && (
+          <ProjectImagesModal
+            images={modalImages}
+            onClose={() => setModalImages(null)}
+          />
+        )}
+      </AnimatePresence>
     </section>
   );
 };

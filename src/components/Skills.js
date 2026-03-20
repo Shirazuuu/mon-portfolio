@@ -1,85 +1,96 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import "../css/Skills.css";
 
-function Skills() {
+const skillData = [
+  { category: "Frontend", skills: [
+      { name: "React.js", level: 90 }, { name: "Vue.js", level: 65 },
+      { name: "Tailwind CSS", level: 80 }, { name: "Bootstrap", level: 85 },
+      { name: "HTML/CSS", level: 95 }, { name: "JavaScript", level: 90 },
+      { name: "React Native", level: 80 },
+    ]},
+  { category: "Backend", skills: [
+      { name: "Express.js", level: 60 }, { name: "Python (Django)", level: 70 },
+      { name: "PHP", level: 50 }, { name: "API REST", level: 75 },
+    ]},
+  { category: "Base de données", skills: [
+      { name: "MySQL", level: 80 }, { name: "PostgreSQL", level: 65 }, { name: "MongoDB", level: 70 },
+    ]},
+  { category: "DevOps & Outils", skills: [
+      { name: "Git", level: 90 }, { name: "Docker", level: 65 },
+      { name: "Linux", level: 75 }, { name: "CI/CD (GitLab CI, Jenkins)", level: 70 },
+    ]},
+];
+
+const tools = ["Figma","VS Code","Android Studio","Wondershare Mokitt","Draw.io","PlantUML","Visual Paradigm","Apache Netbeans","Eclipse","Postman","VirtualBox","Jenkins","GitLab","Kali Linux","StarUML"];
+
+const softSkills = [
+  { title: "Leadership", desc: "Capacité à diriger et motiver une équipe technique" },
+  { title: "Communication", desc: "Excellente communication avec les clients et les équipes" },
+  { title: "Résolution de problèmes", desc: "Approche analytique pour résoudre des défis complexes" },
+  { title: "Adaptabilité", desc: "Capacité à s’adapter rapidement aux nouvelles technologies" },
+  { title: "Gestion de projet", desc: "Planification et exécution efficace des projets" },
+  { title: "Apprentissage continu", desc: "Passion pour l’apprentissage et l’amélioration continue" },
+];
+
+export default function Skills() {
+
+  // refs pour toutes les barres
+  const barsRef = useRef([]);
+
+  useEffect(() => {
+    // Appliquer la largeur des barres après le montage
+    barsRef.current.forEach(bar => {
+      if (bar) {
+        const value = bar.getAttribute("data-level");
+        bar.style.width = `${value}%`;
+      }
+    });
+  }, []);
+
   return (
-    <div className="skills-container" id="skills">
-      <h2>
-        Compétences <span>Techniques</span>
-      </h2>
-      <p className="subtitle">
-        Les technologies et outils que j’utilise pour créer des applications exceptionnelles
-      </p>
+    <section className="skills-container" id="skills">
+      <h2>Compétences <span>Techniques</span></h2>
+      <p className="subtitle">Technologies et outils pour créer des applications modernes et performantes</p>
 
-      {/* === Section Compétences Techniques === */}
       <div className="skills-grid">
-        {/* Frontend */}
-        <div className="skill-box">
-          <h3>Frontend</h3>
-          <div className="skill"><span>React.js</span><div className="bar"><div style={{width: "90%"}}>90%</div></div></div>
-          <div className="skill"><span>Vue.js</span><div className="bar"><div style={{width: "65%"}}>65%</div></div></div>
-          <div className="skill"><span>Tailwind CSS</span><div className="bar"><div style={{width: "80%"}}>80%</div></div></div>
-          <div className="skill"><span>Bootstrap</span><div className="bar"><div style={{width: "85%"}}>85%</div></div></div>
-          <div className="skill"><span>HTML/CSS</span><div className="bar"><div style={{width: "95%"}}>95%</div></div></div>
-          <div className="skill"><span>JavaScript</span><div className="bar"><div style={{width: "90%"}}>90%</div></div></div>
-          <div className="skill"><span>React Native</span><div className="bar"><div style={{width: "80%"}}>80%</div></div></div>
-        </div>
-
-        {/* Backend */}
-        <div className="skill-box">
-          <h3>Backend</h3>
-          <div className="skill"><span>Express.js</span><div className="bar"><div style={{width: "60%"}}>60%</div></div></div>
-          <div className="skill"><span>Python (Django)</span><div className="bar"><div style={{width: "70%"}}>70%</div></div></div>
-          <div className="skill"><span>PHP</span><div className="bar"><div style={{width: "50%"}}>50%</div></div></div>
-          <div className="skill"><span>API REST</span><div className="bar"><div style={{width: "75%"}}>75%</div></div></div>
-        </div>
-
-        {/* Base de données */}
-        <div className="skill-box">
-          <h3>Base de données</h3>
-          <div className="skill"><span>MySQL</span><div className="bar"><div style={{width: "80%"}}>80%</div></div></div>
-          <div className="skill"><span>PostgreSQL</span><div className="bar"><div style={{width: "65%"}}>65%</div></div></div>
-          <div className="skill"><span>MongoDB</span><div className="bar"><div style={{width: "70%"}}>70%</div></div></div>
-        </div>
-
-        {/* DevOps */}
-        <div className="skill-box">
-          <h3>DevOps & Outils</h3>
-          <div className="skill"><span>Git</span><div className="bar"><div style={{width: "90%"}}>90%</div></div></div>
-          <div className="skill"><span>Docker</span><div className="bar"><div style={{width: "65%"}}>65%</div></div></div>
-          <div className="skill"><span>Linux</span><div className="bar"><div style={{width: "75%"}}>75%</div></div></div>
-          <div className="skill"><span>CI/CD (GitLab CI, Jenkins)</span><div className="bar"><div style={{width: "70%"}}>70%</div></div></div>
-        </div>
+        {skillData.map((cat, i) => (
+          <div key={i} className="skill-box">
+            <h3>{cat.category}</h3>
+            {cat.skills.map((s, j) => (
+              <div key={j} className="skill">
+                <span>{s.name}</span>
+                <div className="bar">
+                  <div
+                    ref={el => barsRef.current[i * 10 + j] = el} // chaque barre a sa propre ref
+                    data-level={s.level}
+                  >
+                    {s.level}%
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ))}
       </div>
 
-      {/* === Outils & Technologies === */}
       <div className="tools-section">
         <h3>Outils & Technologies</h3>
         <div className="tools-grid">
-          {[
-            "Figma", "VS Code", "Android Studio", "wondershare Mokitt",
-            "Draw.io", "PlantUML", "Visual Paradigm","Apache Netbeans", "Eclipse", "Postman",
-            "VirtualBox", "Jenkins", "GitLab", "Kali Linux", "StarUML"
-          ].map((tool, index) => (
-            <span key={index} className="tool">{tool}</span>
-          ))}
+          {tools.map((tool, i) => <span key={i} className="tool">{tool}</span>)}
         </div>
       </div>
 
-      {/* === Compétences Transversales === */}
       <div className="soft-skills">
         <h3>Compétences Transversales</h3>
         <div className="soft-grid">
-          <div className="soft-card"><h4>Leadership</h4><p>Capacité à diriger et motiver une équipe technique</p></div>
-          <div className="soft-card"><h4>Communication</h4><p>Excellente communication avec les clients et les équipes</p></div>
-          <div className="soft-card"><h4>Résolution de problèmes</h4><p>Approche analytique pour résoudre des défis complexes</p></div>
-          <div className="soft-card"><h4>Adaptabilité</h4><p>Capacité à s’adapter rapidement aux nouvelles technologies</p></div>
-          <div className="soft-card"><h4>Gestion de projet</h4><p>Planification et exécution efficace des projets</p></div>
-          <div className="soft-card"><h4>Apprentissage continu</h4><p>Passion pour l’apprentissage et l’amélioration continue</p></div>
+          {softSkills.map((s, i) => (
+            <div key={i} className="soft-card">
+              <h4>{s.title}</h4>
+              <p>{s.desc}</p>
+            </div>
+          ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 }
-
-export default Skills;

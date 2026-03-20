@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1,
+    "categories": ["Web"],
+    "title": "E-congé : Application de gestion des absences",
+    "description": "Application web permettant la gestion des employés et des congés.",
+    "tags": ["PHP", "MySQL", "Gestion RH"],
+    "github": "https://github.com/Tommy-ZzZ/Gestion-des-employ-et-cong-personnel",
+    "image": "/e-conge/1.png",
+    "images": ["/e-conge/1.png", "/e-conge/2.png", "/e-conge/3.png", "/e-conge/4.png", "/e-conge/5.png"],
+    "video": "/e-conge/demo.mp4"
+  },
+  {
+    "id": 2,
+    "categories": ["Web", "Mobile"],
+    "title": "E-Pharma : Application de gestion pharmaceutique",
+    "description": "Application web et mobile développée avec React, React Native et PostgreSQL.",
+    "tags": ["React", "React Native", "PostgreSQL"],
+    "github": "https://github.com/Tommy-ZzZ/Mon-projet-Pharma",
+    "image": "/pharma/1.png",
+    "images": ["/pharma/1.png", "/pharma/2.png", "/pharma/3.png", "/pharma/11.png"],
+    "video": "/pharma/pharma.mp4"
+  },
+  {
+    "id": 3,
+    "categories": ["Web"],
+    "title": "E-Notes : Gestion des Notes",
+    "description": "Site web moderne et responsive conçu avec React.",
+    "tags": ["React", "CSS", "Responsive"],
+    "github": "https://github.com/Tommy-ZzZ/Gestion-notes",
+    "image": "/notes/1.png",
+    "images": ["/notes/1.png", "/notes/2.png", "/notes/3.png", "/notes/4.png"],
+    "video": "/notes/note.mp4"
+  }
+]
