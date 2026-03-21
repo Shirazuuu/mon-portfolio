@@ -94,7 +94,7 @@ export default function Hero({ darkMode }) {
               <FaEnvelope className="icon" /> Me Contacter
             </a>
             <a href="/ProCV.pdf" download="ProCV.pdf" className="btn download-btn" aria-label="Télécharger le CV">
-              <FaDownload className="icon" /> Télécharger le CV
+              <FaDownload className="icon" /> Mon CV
             </a>
           </motion.div>
         </motion.div>
