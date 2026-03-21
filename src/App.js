@@ -27,6 +27,30 @@ function App() {
     localStorage.setItem("theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
+  // 👇 Curseurs personnalisés sur tout le site (taille originale)
+  useEffect(() => {
+    // Curseur global
+    document.body.style.cursor = "url('/point.cur'), auto";
+
+    // Curseur sur éléments cliquables
+    const clickableElements = document.querySelectorAll("a, button");
+    clickableElements.forEach(el => {
+      el.style.cursor = "url('/zen.cur'), pointer";
+    });
+
+    // Observer pour gérer les nouveaux boutons/liens ajoutés dynamiquement
+    const observer = new MutationObserver(() => {
+      const newClickables = document.querySelectorAll("a, button");
+      newClickables.forEach(el => {
+        el.style.cursor = "url('/zen.cur'), pointer";
+      });
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // Nettoyage à la désinstallation du composant
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className={`App ${darkMode ? "dark" : ""}`}>
       <NeonGridTrail darkMode={darkMode} /> {/* Fond animé */}
