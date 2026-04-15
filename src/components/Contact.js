@@ -6,13 +6,26 @@ export default function Contact() {
   const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
-  const [website, setWebsite] = useState(""); // ⭐ honeypot
-  const [toastVisible, setToastVisible] = useState(false);
+  const [website, setWebsite] = useState("");
+
   const [loading, setLoading] = useState(false);
+  const [toasts, setToasts] = useState([]);
 
   const contactRef = useRef(null);
   const [visible, setVisible] = useState(false);
 
+  // ================= TOAST SYSTEM =================
+  const addToast = (type, message) => {
+    const id = Date.now();
+
+    setToasts((prev) => [...prev, { id, type, message }]);
+
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 4000);
+  };
+
+  // ================= SUBMIT =================
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -28,15 +41,14 @@ export default function Contact() {
           email,
           subject,
           message,
-          website, // ⭐ anti-bot
+          website,
         }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        setToastVisible(true);
-        setTimeout(() => setToastVisible(false), 5000);
+        addToast("success", "Message envoyé avec succès 🚀");
 
         setName("");
         setEmail("");
@@ -44,21 +56,24 @@ export default function Contact() {
         setMessage("");
         setWebsite("");
       } else {
-        console.error("Erreur API:", data.error);
+        console.error(data.error);
+        addToast("error", "Erreur lors de l’envoi ❌");
       }
     } catch (error) {
-      console.error("Erreur réseau:", error);
+      console.error(error);
+      addToast("error", "Erreur réseau ❌");
     } finally {
       setLoading(false);
     }
   };
 
+  // ================= SCROLL ANIMATION =================
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) setVisible(true);
       },
-      { threshold: 0.2 }
+      { threshold: 0.15 }
     );
 
     if (contactRef.current) observer.observe(contactRef.current);
@@ -72,20 +87,28 @@ export default function Contact() {
       className={`contact-container ${visible ? "visible" : ""}`}
       id="contact"
     >
-      {toastVisible && (
-        <div className="toast show">
-          ✅ Votre message a été envoyé !
-        </div>
-      )}
-
-      <div className="contact-header">
-        <h2>Restons en <span>Contact</span></h2>
-        <p>Vous avez un projet en tête ? N'hésitez pas à me contacter pour en discuter.</p>
+      {/* TOASTS */}
+      <div className="toast-container">
+        {toasts.map((t) => (
+          <div key={t.id} className={`toast ${t.type}`}>
+            <div className="toast-content">
+              {t.type === "success" ? "✅" : "⚠️"}
+              <span>{t.message}</span>
+            </div>
+            <div className="toast-progress" />
+          </div>
+        ))}
       </div>
 
-      <div className="contact-grid">
+      {/* HEADER */}
+      <div className="contact-header animate-on-scroll">
+        <h2>Restons en <span>Contact</span></h2>
+        <p>Vous avez un projet en tête ? Parlons-en ensemble.</p>
+      </div>
 
-        {/* 🔵 CONTACT INFO (100% conservé comme tu voulais) */}
+      <div className="contact-grid animate-on-scroll">
+
+        {/* INFO */}
         <div className="contact-info">
           <h2>Informations de <span>Contact</span></h2>
 
@@ -94,26 +117,26 @@ export default function Contact() {
             <p>tommymaheriniaina@gmail.com</p>
           </a>
 
-          <a href="https://wa.me/261345316018" target="_blank" rel="noopener noreferrer" className="info-box">
-            <b>Téléphone / WhatsApp</b>
+          <a href="https://wa.me/261345316018" className="info-box" target="_blank" rel="noreferrer">
+            <b>WhatsApp</b>
             <p>+261 34 53 160 18</p>
           </a>
 
-          <a href="https://www.google.com/maps/place/Madagascar" target="_blank" rel="noopener noreferrer" className="info-box">
+          <a href="https://www.google.com/maps/place/Madagascar" className="info-box" target="_blank" rel="noreferrer">
             <b>Localisation</b>
             <p>Fianarantsoa, Madagascar</p>
           </a>
 
           <div className="availability">
             <h4>Disponibilité</h4>
-            <p>Lun - Ven: 9h00 - 18h00</p>
-            <p>Sam: 10h00 - 16h00</p>
+            <p>Lun - Ven: 9h - 18h</p>
+            <p>Sam: 10h - 16h</p>
             <p>Dim: Sur rendez-vous</p>
-            <div className="status">✅ Disponible pour de nouveaux projets</div>
+            <div className="status">✅ Disponible</div>
           </div>
         </div>
 
-        {/* 🟢 FORM */}
+        {/* FORM */}
         <div className="contact-form">
           <h2>Envoyez-moi un <span>Message</span></h2>
 
@@ -138,21 +161,21 @@ export default function Contact() {
 
             <input
               type="text"
-              placeholder="Sujet de votre message"
+              placeholder="Sujet"
               required
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
             />
 
             <textarea
-              placeholder="Décrivez votre projet ou posez votre question..."
+              placeholder="Votre message..."
               rows="5"
               required
               value={message}
               onChange={(e) => setMessage(e.target.value)}
             />
 
-            {/* ⭐ HONEYPOT (anti-bot invisible) */}
+            {/* HONEYPOT */}
             <input
               type="text"
               value={website}
@@ -162,7 +185,7 @@ export default function Contact() {
             />
 
             <button type="submit" className="btn glitch" disabled={loading}>
-              {loading ? "Envoi..." : "✈ Envoyer le message"}
+              {loading ? "Envoi en cours..." : "✈ Envoyer"}
             </button>
           </form>
         </div>
