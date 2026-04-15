@@ -67,16 +67,38 @@ export default function Contact() {
     }
   };
 
-  // ================= SCROLL =================
+  // ================= SCROLL (TON CODE + AMÉLIORÉ) =================
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) setVisible(true);
+        if (entry.isIntersecting) {
+          setVisible(true);
+        }
       },
       { threshold: 0.15 }
     );
 
     if (contactRef.current) observer.observe(contactRef.current);
+
+    return () => observer.disconnect();
+  }, []);
+
+  // ✅ NOUVEAU : animation des éléments internes (stagger scroll)
+  useEffect(() => {
+    const elements = document.querySelectorAll(".animate, .info-box, .availability, .contact-form");
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+
+    elements.forEach((el) => observer.observe(el));
 
     return () => observer.disconnect();
   }, []);
@@ -112,10 +134,10 @@ export default function Contact() {
         {/* ================= INFO ================= */}
         <div className="contact-info">
 
-          <h2>Informations de <span>Contact</span></h2>
+          <h2 className="animate">Informations de <span>Contact</span></h2>
 
           {/* EMAIL */}
-          <a href="mailto:tommymaheriniaina@gmail.com" className="info-box">
+          <a href="mailto:tommymaheriniaina@gmail.com" className="info-box animate">
             <MdEmail className="icon" />
             <div>
               <b>Email</b>
@@ -124,7 +146,7 @@ export default function Contact() {
           </a>
 
           {/* PHONE */}
-          <a href="tel:+261345316018" className="info-box">
+          <a href="tel:+261345316018" className="info-box animate">
             <FaPhoneAlt className="icon" />
             <div>
               <b>Téléphone</b>
@@ -137,7 +159,7 @@ export default function Contact() {
             href="https://wa.me/261345316018"
             target="_blank"
             rel="noreferrer"
-            className="info-box"
+            className="info-box animate"
           >
             <FaWhatsapp className="icon" />
             <div>
@@ -151,7 +173,7 @@ export default function Contact() {
             href="https://www.google.com/maps/place/Madagascar"
             target="_blank"
             rel="noreferrer"
-            className="info-box"
+            className="info-box animate"
           >
             <MdLocationOn className="icon" />
             <div>
@@ -161,7 +183,7 @@ export default function Contact() {
           </a>
 
           {/* AVAILABILITY */}
-          <div className="availability">
+          <div className="availability animate">
             <MdSchedule className="icon big" />
             <h4>Disponibilité</h4>
 
@@ -177,7 +199,7 @@ export default function Contact() {
         </div>
 
         {/* ================= FORM ================= */}
-        <div className="contact-form">
+        <div className="contact-form animate">
 
           <h2>Envoyez-moi un <span>Message</span></h2>
 

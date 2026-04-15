@@ -1,3 +1,4 @@
+
 /* ================= THEME VARIABLES ================= */
 :root {
   --section-bg: #f5f5f5;
@@ -28,6 +29,7 @@ body.dark {
   transition: all 0.9s cubic-bezier(0.25, 0.8, 0.25, 1);
   padding: 60px 10%;
   color: var(--text);
+  will-change: transform, opacity;
 }
 
 .contact-container.visible {
@@ -36,16 +38,27 @@ body.dark {
 }
 
 /* ================= SCROLL ANIMATION ================= */
-.animate {
+.animate,
+.animate-item {
   opacity: 0;
-  transform: translateY(40px);
-  transition: all 0.8s ease;
+  transform: translateY(50px);
+  transition: all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+  will-change: transform, opacity;
 }
 
-.contact-container.visible .animate {
+.animate.visible,
+.animate-item.visible {
   opacity: 1;
   transform: translateY(0);
 }
+
+/* stagger */
+.animate-item:nth-child(1) { transition-delay: 0.05s; }
+.animate-item:nth-child(2) { transition-delay: 0.1s; }
+.animate-item:nth-child(3) { transition-delay: 0.15s; }
+.animate-item:nth-child(4) { transition-delay: 0.2s; }
+.animate-item:nth-child(5) { transition-delay: 0.25s; }
+.animate-item:nth-child(6) { transition-delay: 0.3s; }
 
 /* ================= HEADER ================= */
 .contact-header {
@@ -67,11 +80,24 @@ body.dark {
   font-size: 1.1rem;
 }
 
-/* ================= GRID ================= */
+/* ================= GRID (IMPORTANT FIX ALIGNEMENT) ================= */
 .contact-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 30px;
+  align-items: start; /* 🔥 clé du bon alignement */
+}
+
+/* ================= TITRES ALIGNÉS ================= */
+.contact-info h2,
+.contact-form h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 2rem;
+}
+
+.contact-info h2 {
+  padding-top: 5px;
 }
 
 /* ================= INFO BOX ================= */
@@ -85,16 +111,16 @@ body.dark {
   margin-bottom: 12px;
   text-decoration: none;
   color: var(--text);
-  transition: all 0.3s ease;
+  transition: all 0.35s ease;
   position: relative;
   overflow: hidden;
+  will-change: transform;
 }
 
-/* hover moderne */
 .info-box:hover {
-  transform: translateY(-5px);
+  transform: translateY(-6px) scale(1.02);
   border-left: 4px solid var(--highlight);
-  box-shadow: 0 10px 25px rgba(160, 32, 240, 0.15);
+  box-shadow: 0 12px 30px rgba(160, 32, 240, 0.18);
 }
 
 .info-box b {
@@ -111,7 +137,7 @@ body.dark {
 }
 
 .info-box:hover .icon {
-  transform: scale(1.2) rotate(5deg);
+  transform: scale(1.25) rotate(6deg);
 }
 
 /* ================= AVAILABILITY ================= */
@@ -121,16 +147,11 @@ body.dark {
   border-radius: 14px;
   margin-top: 15px;
   text-align: center;
-  transition: all 0.3s ease;
 }
 
 .availability:hover {
-  transform: scale(1.02);
-}
-
-.availability h4 {
-  color: var(--highlight);
-  margin-bottom: 10px;
+  transform: scale(1.03);
+  transition: 0.3s ease;
 }
 
 .status {
@@ -142,25 +163,31 @@ body.dark {
   font-weight: 500;
 }
 
-/* ================= FORM ================= */
+/* ================= FORM FIX COMPLET ================= */
 .contact-form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0; /* 🔥 important */
   background: var(--form-bg);
   padding: 25px;
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.08);
 }
 
-.contact-form h2 {
-  margin-bottom: 20px;
+/* FORM STRUCTURE */
+.contact-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
+/* INPUT GROUP */
 .form-group {
   display: flex;
   gap: 10px;
-  margin-bottom: 12px;
 }
 
-/* INPUTS */
+/* INPUTS FULL FIX */
 .contact-form input,
 .contact-form textarea {
   width: 100%;
@@ -170,6 +197,7 @@ body.dark {
   background: var(--section-bg);
   color: var(--form-text);
   transition: all 0.25s ease;
+  box-sizing: border-box;
 }
 
 .contact-form input::placeholder,
@@ -177,7 +205,6 @@ body.dark {
   color: var(--placeholder);
 }
 
-/* focus effect */
 .contact-form input:focus,
 .contact-form textarea:focus {
   outline: none;
@@ -186,7 +213,6 @@ body.dark {
   box-shadow: 0 0 0 3px rgba(160, 32, 240, 0.15);
 }
 
-/* textarea */
 textarea {
   resize: none;
 }
@@ -205,7 +231,7 @@ textarea {
 }
 
 .btn:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px) scale(1.02);
 }
 
 .btn:disabled {
@@ -251,7 +277,6 @@ textarea {
   overflow: hidden;
 }
 
-/* success / error */
 .toast.success {
   border-left: 4px solid #4BB543;
 }
@@ -260,7 +285,6 @@ textarea {
   border-left: 4px solid #ff4d4d;
 }
 
-/* content */
 .toast-content {
   display: flex;
   gap: 10px;
@@ -268,7 +292,6 @@ textarea {
   font-weight: 500;
 }
 
-/* progress bar */
 .toast-progress {
   position: absolute;
   bottom: 0;
@@ -279,16 +302,9 @@ textarea {
   animation: progress 4.5s linear forwards;
 }
 
-/* animations */
 @keyframes toastIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes progress {
@@ -308,5 +324,10 @@ textarea {
 
   .contact-header h2 {
     font-size: 2rem;
+  }
+
+  .contact-info h2,
+  .contact-form h2 {
+    text-align: center;
   }
 }
