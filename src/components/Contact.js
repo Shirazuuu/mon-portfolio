@@ -6,13 +6,26 @@ export default function Contact() {
   const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
-  const [website, setWebsite] = useState(""); // ⭐ honeypot
-  const [toastVisible, setToastVisible] = useState(false);
+  const [website, setWebsite] = useState("");
+
   const [loading, setLoading] = useState(false);
+  const [toasts, setToasts] = useState([]);
 
   const contactRef = useRef(null);
   const [visible, setVisible] = useState(false);
 
+  // ================= TOAST SYSTEM (FIXED + SAFE) =================
+  const addToast = (type, message) => {
+    const id = crypto.randomUUID?.() || Date.now();
+
+    setToasts((prev) => [...prev, { id, type, message }]);
+
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 4500);
+  };
+
+  // ================= SUBMIT (DEBUG IMPROVED) =================
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -28,15 +41,22 @@ export default function Contact() {
           email,
           subject,
           message,
-          website, // ⭐ anti-bot
+          website,
         }),
       });
 
-      const data = await res.json();
+      let data = null;
+
+      try {
+        data = await res.json();
+      } catch (err) {
+        console.error("❌ JSON invalide du backend");
+      }
+
+      console.log("API RESPONSE:", res.status, data);
 
       if (res.ok) {
-        setToastVisible(true);
-        setTimeout(() => setToastVisible(false), 5000);
+        addToast("success", "Message envoyé avec succès 🚀");
 
         setName("");
         setEmail("");
@@ -44,21 +64,26 @@ export default function Contact() {
         setMessage("");
         setWebsite("");
       } else {
-        console.error("Erreur API:", data.error);
+        addToast(
+          "error",
+          data?.error || "Erreur lors de l’envoi du message ❌"
+        );
       }
     } catch (error) {
-      console.error("Erreur réseau:", error);
+      console.error("NETWORK ERROR:", error);
+      addToast("error", "Erreur réseau ❌");
     } finally {
       setLoading(false);
     }
   };
 
+  // ================= SCROLL ANIMATION =================
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) setVisible(true);
       },
-      { threshold: 0.2 }
+      { threshold: 0.15 }
     );
 
     if (contactRef.current) observer.observe(contactRef.current);
@@ -72,101 +97,101 @@ export default function Contact() {
       className={`contact-container ${visible ? "visible" : ""}`}
       id="contact"
     >
-      {toastVisible && (
-        <div className="toast show">
-          ✅ Votre message a été envoyé !
-        </div>
-      )}
+      {/* ================= TOASTS (FIXED VISIBILITY) ================= */}
+      <div className="toast-container">
+        {toasts.map((t) => (
+          <div key={t.id} className={`toast ${t.type}`}>
+            <div className="toast-content">
+              <span className="toast-icon">
+                {t.type === "success" ? "✅" : "❌"}
+              </span>
+              <span>{t.message}</span>
+            </div>
 
-      <div className="contact-header">
-        <h2>Restons en <span>Contact</span></h2>
-        <p>Vous avez un projet en tête ? N'hésitez pas à me contacter pour en discuter.</p>
+            <div className="toast-progress" />
+          </div>
+        ))}
       </div>
 
-      <div className="contact-grid">
+      {/* HEADER */}
+      <div className="contact-header animate">
+        <h2>Restons en <span>Contact</span></h2>
+        <p>Envoyez-moi un message et je vous réponds rapidement.</p>
+      </div>
 
-        {/* 🔵 CONTACT INFO (100% conservé comme tu voulais) */}
+      <div className="contact-grid animate">
+
+        {/* INFO */}
         <div className="contact-info">
-          <h2>Informations de <span>Contact</span></h2>
+          <h2>Informations</h2>
 
-          <a href="mailto:tommymaheriniaina@gmail.com" className="info-box">
+          <a className="info-box" href="mailto:tommymaheriniaina@gmail.com">
             <b>Email</b>
             <p>tommymaheriniaina@gmail.com</p>
           </a>
 
-          <a href="https://wa.me/261345316018" target="_blank" rel="noopener noreferrer" className="info-box">
-            <b>Téléphone / WhatsApp</b>
+          <a className="info-box" href="https://wa.me/261345316018">
+            <b>WhatsApp</b>
             <p>+261 34 53 160 18</p>
-          </a>
-
-          <a href="https://www.google.com/maps/place/Madagascar" target="_blank" rel="noopener noreferrer" className="info-box">
-            <b>Localisation</b>
-            <p>Fianarantsoa, Madagascar</p>
           </a>
 
           <div className="availability">
             <h4>Disponibilité</h4>
-            <p>Lun - Ven: 9h00 - 18h00</p>
-            <p>Sam: 10h00 - 16h00</p>
-            <p>Dim: Sur rendez-vous</p>
-            <div className="status">✅ Disponible pour de nouveaux projets</div>
+            <p>Lun - Ven</p>
+            <div className="status">Disponible</div>
           </div>
         </div>
 
-        {/* 🟢 FORM */}
+        {/* FORM */}
         <div className="contact-form">
-          <h2>Envoyez-moi un <span>Message</span></h2>
+          <h2>Message</h2>
 
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <input
-                type="text"
-                placeholder="Votre nom"
-                required
+                placeholder="Nom"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-              />
-
-              <input
-                type="email"
-                placeholder="Votre email"
                 required
+              />
+              <input
+                placeholder="Email"
+                type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                required
               />
             </div>
 
             <input
-              type="text"
-              placeholder="Sujet de votre message"
-              required
+              placeholder="Sujet"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
+              required
             />
 
             <textarea
-              placeholder="Décrivez votre projet ou posez votre question..."
+              placeholder="Message"
               rows="5"
-              required
               value={message}
               onChange={(e) => setMessage(e.target.value)}
+              required
             />
 
-            {/* ⭐ HONEYPOT (anti-bot invisible) */}
+            {/* HONEYPOT */}
             <input
               type="text"
+              style={{ display: "none" }}
               value={website}
               onChange={(e) => setWebsite(e.target.value)}
-              style={{ display: "none" }}
               autoComplete="off"
             />
 
-            <button type="submit" className="btn glitch" disabled={loading}>
-              {loading ? "Envoi..." : "✈ Envoyer le message"}
+            <button className="btn" disabled={loading}>
+              {loading ? "Envoi..." : "Envoyer"}
             </button>
           </form>
         </div>
-
       </div>
     </div>
   );
