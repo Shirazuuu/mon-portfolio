@@ -30,6 +30,8 @@ export default function Contact() {
         }),
       });
 
+      const data = await res.json(); // ⭐ IMPORTANT
+
       if (res.ok) {
         setToastVisible(true);
         setTimeout(() => setToastVisible(false), 5000);
@@ -39,10 +41,10 @@ export default function Contact() {
         setSubject("");
         setMessage("");
       } else {
-        console.error("Erreur envoi email");
+        console.error("Erreur API:", data.error);
       }
     } catch (error) {
-      console.error("Erreur:", error);
+      console.error("Erreur réseau:", error);
     } finally {
       setLoading(false);
     }
@@ -75,7 +77,7 @@ export default function Contact() {
 
       <div className="contact-header">
         <h2>Restons en <span>Contact</span></h2>
-        <p>Vous avez un projet en tête ? N'hésitez pas à me contacter pour en discuter.</p>
+        <p>Vous avez un projet en tête ? N'hésitez pas à me contacter.</p>
       </div>
 
       <div className="contact-grid">
@@ -137,7 +139,7 @@ export default function Contact() {
             />
 
             <textarea
-              placeholder="Décrivez votre projet ou posez votre question..."
+              placeholder="Décrivez votre projet..."
               rows="5"
               required
               value={message}
