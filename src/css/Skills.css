@@ -263,7 +263,7 @@
 
 .tools-section h3 {
   margin-bottom: 20px;
-  color: #ffffff;
+  color: var(--text);
   font-weight: 600;
   letter-spacing: 0.3px;
 }
