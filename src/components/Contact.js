@@ -7,30 +7,47 @@ export default function Contact() {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [toastVisible, setToastVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const contactRef = useRef(null);
   const [visible, setVisible] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    // Ouvrir Gmail dans un nouvel onglet
-    const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=tommymaheriniaina@gmail.com&su=${encodeURIComponent(
-      subject
-    )}&body=${encodeURIComponent(message)}`;
-    window.open(gmailLink, "_blank");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          subject,
+          message,
+        }),
+      });
 
-    // Afficher le toast
-    setToastVisible(true);
-    setTimeout(() => setToastVisible(false), 10000);
+      if (res.ok) {
+        setToastVisible(true);
+        setTimeout(() => setToastVisible(false), 5000);
 
-    // Réinitialiser le formulaire
-    setName("");
-    setEmail("");
-    setSubject("");
-    setMessage("");
+        setName("");
+        setEmail("");
+        setSubject("");
+        setMessage("");
+      } else {
+        console.error("Erreur envoi email");
+      }
+    } catch (error) {
+      console.error("Erreur:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Intersection Observer pour l'animation au scroll
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -50,7 +67,11 @@ export default function Contact() {
       className={`contact-container ${visible ? "visible" : ""}`}
       id="contact"
     >
-      {toastVisible && <div className="toast show">✅ Votre message a été envoyé !</div>}
+      {toastVisible && (
+        <div className="toast show">
+          ✅ Votre message a été envoyé !
+        </div>
+      )}
 
       <div className="contact-header">
         <h2>Restons en <span>Contact</span></h2>
@@ -62,15 +83,18 @@ export default function Contact() {
           <h2>Informations de <span>Contact</span></h2>
 
           <a href="mailto:tommymaheriniaina@gmail.com" className="info-box">
-            <b>Email</b><p>tommymaheriniaina@gmail.com</p>
+            <b>Email</b>
+            <p>tommymaheriniaina@gmail.com</p>
           </a>
 
           <a href="https://wa.me/261345316018" target="_blank" rel="noopener noreferrer" className="info-box">
-            <b>Téléphone / WhatsApp</b><p>+261 34 53 160 18</p>
+            <b>Téléphone / WhatsApp</b>
+            <p>+261 34 53 160 18</p>
           </a>
 
           <a href="https://www.google.com/maps/place/Madagascar" target="_blank" rel="noopener noreferrer" className="info-box">
-            <b>Localisation</b><p>Fianarantsoa, Madagascar</p>
+            <b>Localisation</b>
+            <p>Fianarantsoa, Madagascar</p>
           </a>
 
           <div className="availability">
@@ -84,14 +108,45 @@ export default function Contact() {
 
         <div className="contact-form">
           <h2>Envoyez-moi un <span>Message</span></h2>
+
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <input type="text" placeholder="Votre nom" required value={name} onChange={(e) => setName(e.target.value)} />
-              <input type="email" placeholder="Votre email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+              <input
+                type="text"
+                placeholder="Votre nom"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+
+              <input
+                type="email"
+                placeholder="Votre email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
-            <input type="text" placeholder="Sujet de votre message" required value={subject} onChange={(e) => setSubject(e.target.value)} />
-            <textarea placeholder="Décrivez votre projet ou posez votre question..." rows="5" required value={message} onChange={(e) => setMessage(e.target.value)}></textarea>
-            <button type="submit" className="btn glitch">✈ Envoyer le message</button>
+
+            <input
+              type="text"
+              placeholder="Sujet de votre message"
+              required
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+            />
+
+            <textarea
+              placeholder="Décrivez votre projet ou posez votre question..."
+              rows="5"
+              required
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
+
+            <button type="submit" className="btn glitch" disabled={loading}>
+              {loading ? "Envoi..." : "✈ Envoyer le message"}
+            </button>
           </form>
         </div>
       </div>
