@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../css/Contact.css";
 
+// icons
+import { MdEmail, MdLocationOn, MdSchedule } from "react-icons/md";
+import { FaWhatsapp, FaPhoneAlt } from "react-icons/fa";
+
 export default function Contact() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -14,9 +18,9 @@ export default function Contact() {
   const contactRef = useRef(null);
   const [visible, setVisible] = useState(false);
 
-  // ================= TOAST SYSTEM (FIXED + SAFE) =================
+  // ================= TOAST =================
   const addToast = (type, message) => {
-    const id = crypto.randomUUID?.() || Date.now();
+    const id = Date.now();
 
     setToasts((prev) => [...prev, { id, type, message }]);
 
@@ -25,7 +29,7 @@ export default function Contact() {
     }, 4500);
   };
 
-  // ================= SUBMIT (DEBUG IMPROVED) =================
+  // ================= SUBMIT =================
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -33,9 +37,7 @@ export default function Contact() {
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name,
           email,
@@ -45,15 +47,7 @@ export default function Contact() {
         }),
       });
 
-      let data = null;
-
-      try {
-        data = await res.json();
-      } catch (err) {
-        console.error("❌ JSON invalide du backend");
-      }
-
-      console.log("API RESPONSE:", res.status, data);
+      const data = await res.json().catch(() => null);
 
       if (res.ok) {
         addToast("success", "Message envoyé avec succès 🚀");
@@ -64,20 +58,16 @@ export default function Contact() {
         setMessage("");
         setWebsite("");
       } else {
-        addToast(
-          "error",
-          data?.error || "Erreur lors de l’envoi du message ❌"
-        );
+        addToast("error", data?.error || "Erreur lors de l’envoi ❌");
       }
-    } catch (error) {
-      console.error("NETWORK ERROR:", error);
+    } catch (err) {
       addToast("error", "Erreur réseau ❌");
     } finally {
       setLoading(false);
     }
   };
 
-  // ================= SCROLL ANIMATION =================
+  // ================= SCROLL =================
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -97,17 +87,15 @@ export default function Contact() {
       className={`contact-container ${visible ? "visible" : ""}`}
       id="contact"
     >
-      {/* ================= TOASTS (FIXED VISIBILITY) ================= */}
+
+      {/* TOASTS */}
       <div className="toast-container">
         {toasts.map((t) => (
           <div key={t.id} className={`toast ${t.type}`}>
             <div className="toast-content">
-              <span className="toast-icon">
-                {t.type === "success" ? "✅" : "❌"}
-              </span>
+              {t.type === "success" ? "✅" : "❌"}
               <span>{t.message}</span>
             </div>
-
             <div className="toast-progress" />
           </div>
         ))}
@@ -116,47 +104,94 @@ export default function Contact() {
       {/* HEADER */}
       <div className="contact-header animate">
         <h2>Restons en <span>Contact</span></h2>
-        <p>Envoyez-moi un message et je vous réponds rapidement.</p>
+        <p>Vous avez un projet ? Parlons-en ensemble.</p>
       </div>
 
       <div className="contact-grid animate">
 
-        {/* INFO */}
+        {/* ================= INFO ================= */}
         <div className="contact-info">
-          <h2>Informations</h2>
 
-          <a className="info-box" href="mailto:tommymaheriniaina@gmail.com">
-            <b>Email</b>
-            <p>tommymaheriniaina@gmail.com</p>
+          <h2>Informations de <span>Contact</span></h2>
+
+          {/* EMAIL */}
+          <a href="mailto:tommymaheriniaina@gmail.com" className="info-box">
+            <MdEmail className="icon" />
+            <div>
+              <b>Email</b>
+              <p>tommymaheriniaina@gmail.com</p>
+            </div>
           </a>
 
-          <a className="info-box" href="https://wa.me/261345316018">
-            <b>WhatsApp</b>
-            <p>+261 34 53 160 18</p>
+          {/* PHONE */}
+          <a href="tel:+261345316018" className="info-box">
+            <FaPhoneAlt className="icon" />
+            <div>
+              <b>Téléphone</b>
+              <p>+261 34 53 160 18</p>
+            </div>
           </a>
 
+          {/* WHATSAPP */}
+          <a
+            href="https://wa.me/261345316018"
+            target="_blank"
+            rel="noreferrer"
+            className="info-box"
+          >
+            <FaWhatsapp className="icon" />
+            <div>
+              <b>WhatsApp</b>
+              <p>Chat direct disponible</p>
+            </div>
+          </a>
+
+          {/* LOCATION */}
+          <a
+            href="https://www.google.com/maps/place/Madagascar"
+            target="_blank"
+            rel="noreferrer"
+            className="info-box"
+          >
+            <MdLocationOn className="icon" />
+            <div>
+              <b>Localisation</b>
+              <p>Fianarantsoa, Madagascar</p>
+            </div>
+          </a>
+
+          {/* AVAILABILITY */}
           <div className="availability">
+            <MdSchedule className="icon big" />
             <h4>Disponibilité</h4>
-            <p>Lun - Ven</p>
-            <div className="status">Disponible</div>
+
+            <p>Lun - Ven: 9h00 - 18h00</p>
+            <p>Sam: 10h00 - 16h00</p>
+            <p>Dim: Sur rendez-vous</p>
+
+            <div className="status">
+              ✅ Disponible pour de nouveaux projets
+            </div>
           </div>
+
         </div>
 
-        {/* FORM */}
+        {/* ================= FORM ================= */}
         <div className="contact-form">
-          <h2>Message</h2>
+
+          <h2>Envoyez-moi un <span>Message</span></h2>
 
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <input
-                placeholder="Nom"
+                placeholder="Votre nom"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
               />
               <input
-                placeholder="Email"
                 type="email"
+                placeholder="Votre email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -171,8 +206,8 @@ export default function Contact() {
             />
 
             <textarea
-              placeholder="Message"
               rows="5"
+              placeholder="Votre message..."
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               required
@@ -181,17 +216,19 @@ export default function Contact() {
             {/* HONEYPOT */}
             <input
               type="text"
-              style={{ display: "none" }}
               value={website}
               onChange={(e) => setWebsite(e.target.value)}
+              style={{ display: "none" }}
               autoComplete="off"
             />
 
-            <button className="btn" disabled={loading}>
-              {loading ? "Envoi..." : "Envoyer"}
+            <button className="btn glitch" disabled={loading}>
+              {loading ? "Envoi..." : "✈ Envoyer"}
             </button>
           </form>
+
         </div>
+
       </div>
     </div>
   );
