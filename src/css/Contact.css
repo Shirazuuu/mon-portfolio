@@ -1,3 +1,4 @@
+/* Variables de thème */
 :root {
   --section-bg: #f5f5f5;
   --text: #111;
@@ -7,6 +8,7 @@
   --form-bg: #f0f0f0;
   --form-text: #111;
   --placeholder: #888;
+  --btn-bg: linear-gradient(90deg,#a020f0,#e940ff);
 }
 
 body.dark {
@@ -18,205 +20,204 @@ body.dark {
   --form-bg: #1e1e1e;
   --form-text: #fff;
   --placeholder: #aaa;
+  --btn-bg: linear-gradient(90deg,#a020f0,#e940ff);
 }
 
-/* SECTION */
+/* Animation fade-up pour le scroll */
 .contact-container {
   opacity: 0;
-  transform: translateY(80px) scale(0.98);
-  transition: all 0.9s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transform: translateY(50px);
+  transition: all 0.8s ease-out;
   padding: 60px 10%;
   color: var(--text);
 }
 
 .contact-container.visible {
   opacity: 1;
-  transform: translateY(0) scale(1);
-}
-
-/* ANIMATION ELEMENTS */
-.animate-on-scroll {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: all 0.8s ease;
-}
-
-.contact-container.visible .animate-on-scroll {
-  opacity: 1;
   transform: translateY(0);
 }
 
-/* HEADER */
+/* Header */
 .contact-header {
   text-align: center;
   margin-bottom: 50px;
 }
-
 .contact-header h2 {
   font-size: 2.5rem;
+  margin-bottom: 15px;
+  color: var(--text);
 }
-
-.contact-header span {
+.contact-header h2 span {
   color: var(--highlight);
 }
-
 .contact-header p {
+  font-size: 1.2rem;
   color: var(--subtitle);
+  max-width: 700px;
+  margin: 0 auto;
 }
 
-/* GRID */
+/* Grid pour infos et formulaire */
 .contact-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 30px;
 }
 
-/* INFO */
+/* Boxes d'info */
 .info-box {
   display: block;
   background: var(--card-bg);
-  padding: 18px;
+  padding: 20px;
   border-radius: 12px;
-  margin-bottom: 12px;
-  color: var(--text);
+  margin-bottom: 15px;
   text-decoration: none;
+  color: var(--text);
   transition: 0.3s;
 }
-
 .info-box:hover {
-  transform: translateY(-4px);
+  opacity: 0.8;
+  transform: translateY(-2px);
   border-left: 4px solid var(--highlight);
 }
+.info-box b {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 1.1rem;
+  color: var(--highlight);
+}
 
-/* FORM */
+/* Disponibilité */
+.availability {
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: 12px;
+  color: var(--text);
+}
+.availability h4 {
+  margin-bottom: 10px;
+  color: var(--highlight);
+}
+.status {
+  margin-top: 10px;
+  background: rgba(160, 32, 240, 0.15);
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 500;
+  color: var(--highlight);
+}
+
+/* Formulaire */
 .contact-form {
   background: var(--form-bg);
   padding: 25px;
   border-radius: 12px;
+  color: var(--form-text);
 }
-
+.contact-form h2 {
+  margin-bottom: 20px;
+}
 .form-group {
   display: flex;
   gap: 10px;
+  margin-bottom: 15px;
 }
-
-input, textarea {
+.contact-form input,
+.contact-form textarea {
   width: 100%;
   padding: 12px;
-  border-radius: 8px;
   border: 1px solid #333;
+  border-radius: 8px;
   background: var(--section-bg);
   color: var(--form-text);
-  transition: 0.25s;
 }
-
-input:focus, textarea:focus {
-  outline: none;
-  border-color: var(--highlight);
-  transform: translateY(-2px);
-  box-shadow: 0 0 0 3px rgba(160,32,240,0.15);
+.contact-form input::placeholder,
+.contact-form textarea::placeholder {
+  color: var(--placeholder);
 }
-
-/* BUTTON */
-.btn {
-  width: 100%;
-  padding: 14px;
+.contact-form textarea {
+  resize: none;
+  margin-bottom: 15px;
+}
+.contact-form button {
+  background: var(--btn-bg);
+  color: #fff;
+  padding: 14px 20px;
+  border: none;
   border-radius: 8px;
-  border: 2px solid var(--highlight);
-  background: none;
-  color: var(--text);
   cursor: pointer;
+  width: 100%;
+  font-size: 1rem;
   transition: 0.3s;
 }
-
-.btn:disabled {
-  opacity: 0.6;
+.contact-form button:hover {
+  opacity: 0.9;
 }
 
-/* GLITCH */
-.glitch:hover {
-  animation: glitch 0.3s infinite;
+/* Responsive */
+@media(max-width:768px){
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+  .form-group {
+    flex-direction: column;
+  }
+}
+
+/* Bouton glitch */
+.btn {
+  position: relative;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  background: none;
+  border: 2px solid var(--highlight);
+  border-radius: 8px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  width: 100%;
+  animation: none;
+}
+.glitch {
+  text-shadow: 0.05em 0 0 rgba(255,0,0,0.75), -0.025em -0.05em 0 rgba(0,255,0,0.75), 0.025em 0.05em 0 rgba(0,0,255,0.75);
+}
+.glitch:hover { 
+  animation: glitch 0.3s cubic-bezier(0.25,0.46,0.45,0.94) both infinite, gradientShift 3s ease infinite;
   background: linear-gradient(90deg,#a020f0,#e940ff,#20f0a0);
   background-size: 200% 200%;
 }
-
 @keyframes glitch {
-  0% { transform: translate(0); }
-  50% { transform: translate(-3px,3px); }
-  100% { transform: translate(0); }
+  0%{transform:translate(0);}
+  20%{transform:translate(-4px,4px);}
+  40%{transform:translate(-4px,-4px);}
+  60%{transform:translate(4px,4px);}
+  80%{transform:translate(4px,-4px);}
+  100%{transform:translate(0);}
+}
+@keyframes gradientShift {
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
 }
 
-/* TOAST */
-.toast-container {
+/* Toast message */
+.toast {
   position: fixed;
   bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  background: #4BB543;
+  color: #fff;
+  padding: 12px 25px;
+  border-radius: 8px;
+  font-weight: 600;
+  opacity: 0;
+  transition: all 0.3s ease;
   z-index: 9999;
 }
-
-.toast {
-  min-width: 280px;
-  padding: 12px 16px;
-  border-radius: 12px;
-  background: var(--card-bg);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  position: relative;
-  animation: slideUp 0.3s ease;
-}
-
-.toast.success {
-  border-left: 4px solid #4BB543;
-}
-
-.toast.error {
-  border-left: 4px solid #ff4d4d;
-}
-
-.toast-content {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-/* progress bar */
-.toast-progress {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 3px;
-  background: var(--highlight);
-  width: 100%;
-  animation: progress 4s linear forwards;
-}
-
-@keyframes progress {
-  from { width: 100%; }
-  to { width: 0%; }
-}
-
-/* scroll animation */
-@keyframes slideUp {
-  from {
-    transform: translate(-50%, 20px);
-    opacity: 0;
-  }
-  to {
-    transform: translate(-50%, 0);
-    opacity: 1;
-  }
-}
-
-/* RESPONSIVE */
-@media (max-width: 768px) {
-  .contact-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .form-group {
-    flex-direction: column;
-  }
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-10px);
 }

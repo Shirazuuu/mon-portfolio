@@ -6,26 +6,13 @@ export default function Contact() {
   const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
-  const [website, setWebsite] = useState("");
-
+  const [website, setWebsite] = useState(""); // ⭐ honeypot
+  const [toastVisible, setToastVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [toasts, setToasts] = useState([]);
 
   const contactRef = useRef(null);
   const [visible, setVisible] = useState(false);
 
-  // ================= TOAST SYSTEM =================
-  const addToast = (type, message) => {
-    const id = Date.now();
-
-    setToasts((prev) => [...prev, { id, type, message }]);
-
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 4000);
-  };
-
-  // ================= SUBMIT =================
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -41,14 +28,15 @@ export default function Contact() {
           email,
           subject,
           message,
-          website,
+          website, // ⭐ anti-bot
         }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        addToast("success", "Message envoyé avec succès 🚀");
+        setToastVisible(true);
+        setTimeout(() => setToastVisible(false), 5000);
 
         setName("");
         setEmail("");
@@ -56,24 +44,21 @@ export default function Contact() {
         setMessage("");
         setWebsite("");
       } else {
-        console.error(data.error);
-        addToast("error", "Erreur lors de l’envoi ❌");
+        console.error("Erreur API:", data.error);
       }
     } catch (error) {
-      console.error(error);
-      addToast("error", "Erreur réseau ❌");
+      console.error("Erreur réseau:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  // ================= SCROLL ANIMATION =================
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) setVisible(true);
       },
-      { threshold: 0.15 }
+      { threshold: 0.2 }
     );
 
     if (contactRef.current) observer.observe(contactRef.current);
@@ -87,28 +72,20 @@ export default function Contact() {
       className={`contact-container ${visible ? "visible" : ""}`}
       id="contact"
     >
-      {/* TOASTS */}
-      <div className="toast-container">
-        {toasts.map((t) => (
-          <div key={t.id} className={`toast ${t.type}`}>
-            <div className="toast-content">
-              {t.type === "success" ? "✅" : "⚠️"}
-              <span>{t.message}</span>
-            </div>
-            <div className="toast-progress" />
-          </div>
-        ))}
-      </div>
+      {toastVisible && (
+        <div className="toast show">
+          ✅ Votre message a été envoyé !
+        </div>
+      )}
 
-      {/* HEADER */}
-      <div className="contact-header animate-on-scroll">
+      <div className="contact-header">
         <h2>Restons en <span>Contact</span></h2>
-        <p>Vous avez un projet en tête ? Parlons-en ensemble.</p>
+        <p>Vous avez un projet en tête ? N'hésitez pas à me contacter pour en discuter.</p>
       </div>
 
-      <div className="contact-grid animate-on-scroll">
+      <div className="contact-grid">
 
-        {/* INFO */}
+        {/* 🔵 CONTACT INFO (100% conservé comme tu voulais) */}
         <div className="contact-info">
           <h2>Informations de <span>Contact</span></h2>
 
@@ -117,26 +94,26 @@ export default function Contact() {
             <p>tommymaheriniaina@gmail.com</p>
           </a>
 
-          <a href="https://wa.me/261345316018" className="info-box" target="_blank" rel="noreferrer">
-            <b>WhatsApp</b>
+          <a href="https://wa.me/261345316018" target="_blank" rel="noopener noreferrer" className="info-box">
+            <b>Téléphone / WhatsApp</b>
             <p>+261 34 53 160 18</p>
           </a>
 
-          <a href="https://www.google.com/maps/place/Madagascar" className="info-box" target="_blank" rel="noreferrer">
+          <a href="https://www.google.com/maps/place/Madagascar" target="_blank" rel="noopener noreferrer" className="info-box">
             <b>Localisation</b>
             <p>Fianarantsoa, Madagascar</p>
           </a>
 
           <div className="availability">
             <h4>Disponibilité</h4>
-            <p>Lun - Ven: 9h - 18h</p>
-            <p>Sam: 10h - 16h</p>
+            <p>Lun - Ven: 9h00 - 18h00</p>
+            <p>Sam: 10h00 - 16h00</p>
             <p>Dim: Sur rendez-vous</p>
-            <div className="status">✅ Disponible</div>
+            <div className="status">✅ Disponible pour de nouveaux projets</div>
           </div>
         </div>
 
-        {/* FORM */}
+        {/* 🟢 FORM */}
         <div className="contact-form">
           <h2>Envoyez-moi un <span>Message</span></h2>
 
@@ -161,21 +138,21 @@ export default function Contact() {
 
             <input
               type="text"
-              placeholder="Sujet"
+              placeholder="Sujet de votre message"
               required
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
             />
 
             <textarea
-              placeholder="Votre message..."
+              placeholder="Décrivez votre projet ou posez votre question..."
               rows="5"
               required
               value={message}
               onChange={(e) => setMessage(e.target.value)}
             />
 
-            {/* HONEYPOT */}
+            {/* ⭐ HONEYPOT (anti-bot invisible) */}
             <input
               type="text"
               value={website}
@@ -185,7 +162,7 @@ export default function Contact() {
             />
 
             <button type="submit" className="btn glitch" disabled={loading}>
-              {loading ? "Envoi en cours..." : "✈ Envoyer"}
+              {loading ? "Envoi..." : "✈ Envoyer le message"}
             </button>
           </form>
         </div>
