@@ -6,6 +6,7 @@ export default function Contact() {
   const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
+  const [website, setWebsite] = useState(""); // ⭐ HONEYPOT
   const [toastVisible, setToastVisible] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -27,10 +28,11 @@ export default function Contact() {
           email,
           subject,
           message,
+          website, // ⭐ anti-bot field
         }),
       });
 
-      const data = await res.json(); // ⭐ IMPORTANT
+      const data = await res.json();
 
       if (res.ok) {
         setToastVisible(true);
@@ -40,6 +42,7 @@ export default function Contact() {
         setEmail("");
         setSubject("");
         setMessage("");
+        setWebsite("");
       } else {
         console.error("Erreur API:", data.error);
       }
@@ -70,14 +73,12 @@ export default function Contact() {
       id="contact"
     >
       {toastVisible && (
-        <div className="toast show">
-          ✅ Votre message a été envoyé !
-        </div>
+        <div className="toast show">✅ Message envoyé !</div>
       )}
 
       <div className="contact-header">
         <h2>Restons en <span>Contact</span></h2>
-        <p>Vous avez un projet en tête ? N'hésitez pas à me contacter.</p>
+        <p>Vous avez un projet en tête ? Contactez-moi.</p>
       </div>
 
       <div className="contact-grid">
@@ -88,24 +89,6 @@ export default function Contact() {
             <b>Email</b>
             <p>tommymaheriniaina@gmail.com</p>
           </a>
-
-          <a href="https://wa.me/261345316018" target="_blank" rel="noopener noreferrer" className="info-box">
-            <b>Téléphone / WhatsApp</b>
-            <p>+261 34 53 160 18</p>
-          </a>
-
-          <a href="https://www.google.com/maps/place/Madagascar" target="_blank" rel="noopener noreferrer" className="info-box">
-            <b>Localisation</b>
-            <p>Fianarantsoa, Madagascar</p>
-          </a>
-
-          <div className="availability">
-            <h4>Disponibilité</h4>
-            <p>Lun - Ven: 9h00 - 18h00</p>
-            <p>Sam: 10h00 - 16h00</p>
-            <p>Dim: Sur rendez-vous</p>
-            <div className="status">✅ Disponible pour de nouveaux projets</div>
-          </div>
         </div>
 
         <div className="contact-form">
@@ -132,22 +115,31 @@ export default function Contact() {
 
             <input
               type="text"
-              placeholder="Sujet de votre message"
+              placeholder="Sujet"
               required
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
             />
 
             <textarea
-              placeholder="Décrivez votre projet..."
+              placeholder="Message"
               rows="5"
               required
               value={message}
               onChange={(e) => setMessage(e.target.value)}
             />
 
-            <button type="submit" className="btn glitch" disabled={loading}>
-              {loading ? "Envoi..." : "✈ Envoyer le message"}
+            {/* ⭐ HONEYPOT FIELD (hidden for bots) */}
+            <input
+              type="text"
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+              style={{ display: "none" }}
+              autoComplete="off"
+            />
+
+            <button type="submit" disabled={loading}>
+              {loading ? "Envoi..." : "Envoyer"}
             </button>
           </form>
         </div>
