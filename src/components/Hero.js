@@ -1,104 +1,166 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import {
+  FaEnvelope,
+  FaGithub,
+  FaLinkedin,
+  FaWhatsapp,
+  FaFacebookF,
+} from "react-icons/fa";
+
 import profileLight from "../assets/profile.png";
 import profileDark from "../assets/profile_dark.png";
-import { FaDownload, FaEnvelope } from "react-icons/fa";
-import { motion } from "framer-motion";
+
 import "../css/Hero.css";
 
-const useTypingLoop = (texts, start = true, typingSpeed = 150, erasingSpeed = 100, delayBetween = 1500) => {
-  const [displayText, setDisplayText] = useState("");
-  const [index, setIndex] = useState(0);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const timeoutRef = useRef(null);
+/* ✨ ANIMATIONS MODERNES */
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.18,
+      delayChildren: 0.2,
+    },
+  },
+};
 
-  useEffect(() => {
-    if (!start) return;
-    const currentText = texts[index % texts.length];
-    if (!isDeleting && displayText.length < currentText.length)
-      timeoutRef.current = setTimeout(() => setDisplayText(currentText.substring(0, displayText.length + 1)), typingSpeed);
-    else if (isDeleting && displayText.length > 0)
-      timeoutRef.current = setTimeout(() => setDisplayText(currentText.substring(0, displayText.length - 1)), erasingSpeed);
-    else if (!isDeleting && displayText.length === currentText.length)
-      timeoutRef.current = setTimeout(() => setIsDeleting(true), delayBetween);
-    else if (isDeleting && displayText.length === 0) {
-      setIsDeleting(false);
-      setIndex(prev => prev + 1);
-    }
-    return () => clearTimeout(timeoutRef.current);
-  }, [displayText, isDeleting, index, texts, start, typingSpeed, erasingSpeed, delayBetween]);
-
-  return displayText;
+const item = {
+  hidden: {
+    opacity: 0,
+    y: 40,
+    scale: 0.98,
+    filter: "blur(12px)",
+  },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    filter: "blur(0px)",
+    transition: {
+      duration: 0.9,
+      ease: [0.16, 1, 0.3, 1],
+    },
+  },
 };
 
 export default function Hero({ darkMode }) {
-  const [nameFinished, setNameFinished] = useState(false);
-  const [subtitleIndex, setSubtitleIndex] = useState(0);
-  const subtitles = ["Développeur Full-Stack", "Designer", "Assistant Virtuel"];
 
-  const nameText = useTypingLoop(["Bonjour, je suis Maheriniana Tommy"], true, 70, 50, 1000);
+  const fullText = "Maheriniaina Tommy";
+  const [text, setText] = useState("");
+  const [index, setIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  // Quand le nom est terminé, on déclenche les sous-titres
   useEffect(() => {
-    if (nameText === "Bonjour, je suis Maheriniana Tommy") {
-      setNameFinished(true);
-    }
-  }, [nameText]);
+    const speed = isDeleting ? 60 : 120;
 
-  // Changement automatique du sous-titre
-  useEffect(() => {
-    if (!nameFinished) return;
-    const interval = setInterval(() => {
-      setSubtitleIndex(prev => (prev + 1) % subtitles.length);
-    }, 2000);
-    return () => clearInterval(interval);
-  }, [nameFinished, subtitles.length]); // ✅ correction : ajout de subtitles.length
+    const timer = setTimeout(() => {
+      if (!isDeleting) {
+        setText(fullText.substring(0, index + 1));
+        setIndex(index + 1);
 
-  const splitName = nameText.split("Bonjour,");
-  const afterBonjour = splitName[1] || "";
+        if (index + 1 === fullText.length) {
+          setTimeout(() => setIsDeleting(true), 1200);
+        }
+      } else {
+        setText(fullText.substring(0, index - 1));
+        setIndex(index - 1);
+
+        if (index === 0) setIsDeleting(false);
+      }
+    }, speed);
+
+    return () => clearTimeout(timer);
+  }, [index, isDeleting]);
 
   return (
     <section className="hero" id="home">
-      <div className="hero-content">
-        {/* IMAGE */}
-        <motion.div className="profile-container" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8 }}>
-          <img key={darkMode ? "dark" : "light"} src={darkMode ? profileDark : profileLight} alt="Profil" className="profile-img" loading="lazy" />
-        </motion.div>
 
-        {/* TEXTE */}
-        <motion.div className="text-container" initial="hidden" animate="visible" variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.2 } } }}>
-          <motion.h1 className="hero-title" variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}>
-            <span>Bonjour,</span>
-            <span className="highlight">{afterBonjour}</span>
-            <span className="cursor">|</span>
+      <div className="hero-blur hero-blur-1"></div>
+      <div className="hero-blur hero-blur-2"></div>
+
+      {/* ✅ CHANGEMENT ICI : animate → whileInView */}
+      <motion.div
+        className="hero-wrapper"
+        variants={container}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: false, amount: 0.4 }}
+      >
+
+        {/* LEFT */}
+        <motion.div className="hero-left" variants={container}>
+
+          <motion.h1 className="hero-title" variants={item}>
+            Bonjour, je suis{" "}
+            <span className="gradient-text typing-text">
+              {text}
+              <span className="cursor">|</span>
+            </span>
           </motion.h1>
 
-          {/* SOUS-TITRES DYNAMIQUES */}
-          {nameFinished && (
-            <motion.h2
-              key={subtitleIndex}
-              className="subtitle subtitle-vertical animate"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              {subtitles[subtitleIndex]}
-            </motion.h2>
-          )}
-
-          <motion.p className="description" variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} transition={{ delay: 0.5 }}>
-            Développeur passionné, spécialisé dans les technologies JavaScript. Je conçois des applications web et mobiles modernes, performantes et intuitives.
+          <motion.p className="hero-description" variants={item}>
+            Développeur passionné spécialisé dans la création
+            d’applications web modernes, performantes et intuitives.
+            J’aime concevoir des expériences fluides avec les technologies JavaScript modernes.
           </motion.p>
 
-          <motion.div className="hero-buttons" variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} transition={{ delay: 0.8 }}>
-            <a href="#contact" className="btn contact-btn" aria-label="Me Contacter">
-              <FaEnvelope className="icon" /> Me Contacter
-            </a>
-            <a href="/ProCV.pdf" download="ProCV.pdf" className="btn download-btn" aria-label="Télécharger le CV">
-              <FaDownload className="icon" /> Mon CV
+          <motion.div className="hero-actions" variants={item}>
+            <a href="#contact" className="primary-btn">
+              <FaEnvelope />
+              Contacter
             </a>
           </motion.div>
+
+          <motion.div className="hero-socials" variants={item}>
+            <a href="https://github.com/" target="_blank" rel="noreferrer">
+              <FaGithub />
+            </a>
+            <a href="https://linkedin.com/" target="_blank" rel="noreferrer">
+              <FaLinkedin />
+            </a>
+            <a href="https://www.facebook.com/tommy.69D.Gun" target="_blank" rel="noreferrer">
+              <FaFacebookF />
+            </a>
+            <a href="https://wa.me/261345316018" target="_blank" rel="noreferrer">
+              <FaWhatsapp />
+            </a>
+          </motion.div>
+
         </motion.div>
-      </div>
+
+        {/* RIGHT (entrée fluide premium) */}
+        <motion.div
+          className="hero-right"
+          initial={{ opacity: 0, x: 60, scale: 0.9 }}
+          whileInView={{ opacity: 1, x: 0, scale: 1 }}
+          viewport={{ once: false, amount: 0.4 }}
+          transition={{
+            duration: 1,
+            delay: 0.2,
+            ease: [0.16, 1, 0.3, 1],
+          }}
+        >
+          <div className="image-wrapper">
+
+            <img
+              src={darkMode ? profileDark : profileLight}
+              alt="Maheriniaina Tommy"
+              className="hero-image"
+            />
+
+            <div className="floating-card floating-card-1">
+              Full Stack
+            </div>
+
+            <div className="floating-card floating-card-2">
+              Développeur
+            </div>
+
+          </div>
+        </motion.div>
+
+      </motion.div>
     </section>
   );
 }
