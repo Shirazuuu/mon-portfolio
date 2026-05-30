@@ -1,4 +1,3 @@
-/* About.css */
 :root {
   --section-bg:#f5f5f5;
   --text:#111;
@@ -49,19 +48,22 @@ body {
 
 .about-intro {
   width:100%;
-  overflow: visible; /* ⚡ Correction ici */
+  overflow:visible;
 }
 
+/* ❌ SUPPRESSION BORDURE VIOLETTE */
 .about-photo {
   width:260px;
   height:260px;
   border-radius:50%;
   overflow:hidden;
-  border:4px dashed var(--highlight);
   float:left;
   margin-right:40px;
   margin-bottom:20px;
   transition:transform 0.3s;
+
+  border:none;              /* ✅ supprimé */
+  box-shadow:0 10px 30px rgba(0,0,0,0.15); /* joli effet propre */
 }
 
 .about-photo img {
@@ -83,6 +85,7 @@ body {
   transition:opacity 0.5s ease;
 }
 
+/* EXPERIENCE / FORMATION */
 .experience-formation {
   display:block;
   position:relative;
@@ -100,6 +103,7 @@ body {
   margin-right:4%;
 }
 
+/* LINE */
 .vertical-line-container {
   position:absolute;
   top:0;
@@ -118,6 +122,7 @@ body {
   transition:height 0.3s ease-out;
 }
 
+/* TITRES */
 .experience h2,
 .formation h2 {
   color:var(--text);
@@ -127,6 +132,7 @@ body {
   margin-bottom:20px;
 }
 
+/* ITEMS */
 .experience-item,
 .formation-item {
   background:var(--section-bg);
@@ -161,6 +167,7 @@ body {
   color:var(--subtitle);
 }
 
+/* POINT TIMELINE */
 .timeline-point {
   position:absolute;
   left:-10px;
@@ -173,20 +180,18 @@ body {
   box-shadow:0 0 8px rgba(0,0,0,0.2);
 }
 
-.experience-item.visible .timeline-point,
-.formation-item.visible .timeline-point {
-  animation:glow 1.2s infinite alternate;
-}
-
+/* ANIMATION */
 @keyframes glow {
   0%,100%{box-shadow:0 0 8px rgba(160,32,240,0.6);}
   50%{box-shadow:0 0 20px rgba(160,32,240,1);}
 }
 
-.vertical-line-fill.visible {
+.experience-item.visible .timeline-point,
+.formation-item.visible .timeline-point {
   animation:glow 1.2s infinite alternate;
 }
 
+/* LINKS */
 a {
   color:var(--highlight);
   text-decoration:none;
@@ -196,6 +201,7 @@ a:hover {
   text-decoration:underline;
 }
 
+/* ICON */
 .section-icon {
   color:var(--highlight);
   margin-right:8px;
@@ -203,6 +209,7 @@ a:hover {
   font-size:1.5rem;
 }
 
+/* STATS */
 .stats {
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
@@ -241,7 +248,7 @@ a:hover {
   color:var(--subtitle);
 }
 
-/* === Responsive === */
+/* RESPONSIVE */
 @media(max-width:768px){
   .about-container { padding:50px 10px 80px; gap:25px; }
   .stats div { width:140px; height:140px; }
