@@ -1,0 +1,173 @@
+.navbar {
+  width: 100%;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  background: var(--nav-bg);
+  z-index: 10000;
+  box-sizing: border-box;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+/* Ombre légère en mode clair */
+.navbar.light-mode {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.navbar.hide {
+  transform: translateY(-100%);
+}
+
+.navbar.show {
+  transform: translateY(0);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  margin-right: auto;
+  position: relative; /* nécessaire pour superposer les logos */
+  height: 45px;
+}
+
+.logo img {
+  height: 45px;
+  width: auto;
+  object-fit: contain;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+}
+
+/* Logo effet scale léger pour transition */
+.logo img.fade-logo {
+  transform: scale(1);
+}
+
+.logo img.fade-logo.show {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.logo img.fade-logo.hide {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  justify-content: center;
+  padding-right: 2rem;
+  box-sizing: border-box;
+}
+
+.nav-links li a {
+  color: var(--nav-text);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav-links li a:hover {
+  color: var(--link-hover);
+}
+
+.dark-toggle {
+  font-size: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 15px;
+  color: inherit;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.dark-toggle:hover {
+  transform: scale(1.2);
+}
+
+.burger {
+  display: none;
+  cursor: pointer;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 10001;
+  background: none;
+  border: none;
+}
+
+.burger div {
+  width: 25px;
+  height: 3px;
+  background-color: var(--nav-text);
+  transition: all 0.3s ease;
+}
+
+.burger.toggle .line1 {
+  transform: rotate(-45deg) translate(-5px, 6px);
+}
+
+.burger.toggle .line2 {
+  opacity: 0;
+}
+
+.burger.toggle .line3 {
+  transform: rotate(45deg) translate(-5px, -6px);
+}
+
+@media (max-width: 768px) {
+  .logo {
+    height: 38px;
+  }
+
+  .logo img {
+    height: 38px;
+  }
+
+  .nav-links {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 100%;
+    background: var(--nav-bg);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 9999;
+    gap: 2rem;
+    padding-right: 1.5rem;
+    box-sizing: border-box;
+  }
+
+  .nav-links.open {
+    transform: translateX(0);
+  }
+
+  .burger {
+    display: flex;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+  }
+
+  /* Décaler le dark toggle pour éviter conflit avec burger */
+  .dark-toggle {
+    position: fixed;
+    top: 20px;
+    right: 65px;
+  }
+
+  body.menu-open {
+    overflow: hidden;
+  }
+  
+}

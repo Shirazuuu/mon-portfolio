@@ -1,0 +1,51 @@
+[
+  {
+    "id": 1,
+    "categories": ["Web"],
+    "title": "E-congé : Application de gestion des absences",
+    "description": "Application web développée en PHP avec une base de données MySQL pour gérer efficacement les informations des employés et leurs demandes de congés. Inclut un système de validation des absences, un tableau de bord administrateur et la gestion des droits par rôle.",
+    "tags": ["PHP", "MySQL", "HTML", "CSS", "JavaScript"],
+    "github": "https://github.com/Tommy-ZzZ/Gestion-des-employ-et-cong-personnel",
+    "demo": "https://gestion-des-employ-et-cong.vercel.app/",
+    "image": "/e-conge/absence.png",
+    "images": [
+      "/e-conge/1.png",
+      "/e-conge/2.png",
+      "/e-conge/3.png",
+      "/e-conge/4.png",
+      "/e-conge/5.png"
+    ]
+  },
+  {
+    "id": 2,
+    "categories": ["Web", "Mobile"],
+    "title": "E-Pharma : Application de gestion pharmaceutique",
+    "description": "Plateforme complète de gestion de clientèle et de commande de produits pharmaceutiques, développée avec React pour le web et React Native pour le mobile. Permet la gestion du catalogue produits, le suivi des commandes et l'administration du stock avec PostgreSQL.",
+    "tags": ["React", "React Native", "PostgreSQL", "JavaScript", "CSS"],
+    "github": "https://github.com/Tommy-ZzZ/Mon-projet-Pharma",
+    "demo": "",
+    "image": "/pharma/pharma.png",
+    "images": [
+      "/pharma/1.png",
+      "/pharma/2.png",
+      "/pharma/3.png",
+      "/pharma/11.png"
+    ]
+  },
+  {
+    "id": 3,
+    "categories": ["Web"],
+    "title": "E-Notes : Gestion des Notes",
+    "description": "Application moderne de gestion de notes offrant une expérience utilisateur fluide et efficace. Permet de créer, organiser, modifier et sécuriser vos notes avec une interface responsive conçue avec React.",
+    "tags": ["React", "JavaScript", "CSS", "Responsive"],
+    "github": "https://github.com/Tommy-ZzZ/Gestion-notes",
+    "demo": "https://gestion-notes-lilac.vercel.app/",
+    "image": "/notes/note.png",
+    "images": [
+      "/notes/1.png",
+      "/notes/2.png",
+      "/notes/3.png",
+      "/notes/4.png"
+    ]
+  }
+]
