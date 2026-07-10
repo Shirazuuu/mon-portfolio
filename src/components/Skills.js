@@ -39,6 +39,8 @@ const skillData = [
       { name: "Django (Python)", level: 85 },
       { name: "Spring Boot", level: 75 },
       { name: "PHP", level: 70 },
+      { name: "Laravel", level: 75 },
+      { name: "Symfony", level: 60 },
       { name: "API REST", level: 85 },
     ],
   },
