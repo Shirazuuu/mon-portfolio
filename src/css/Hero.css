@@ -1,31 +1,30 @@
 :root {
-  --highlight-color: #7f5af0;
   --text-color: var(--text);
   --text-secondary: var(--subtitle);
 
   --glass-bg: rgba(255, 255, 255, 0.08);
   --glass-border: rgba(0, 0, 0, 0.08);
 
-  --button-bg: #7f5af0;
-  --button-hover: #9f7cff;
 }
 
 /* HERO */
 .hero {
   min-height: 100vh;
+  box-sizing: border-box;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  padding: 2rem;
+  /* haut : dégage la barre de navigation fixe (84 px) */
+  padding: 7.5rem 2rem 3rem;
 
   position: relative;
   overflow: hidden;
 
   z-index: 5;
 
-  background: radial-gradient(circle at top, rgba(127,90,240,0.12), transparent 60%);
+  background: radial-gradient(circle at top, rgba(var(--accent-rgb),0.12), transparent 60%);
 }
 
 /* WRAPPER */
@@ -34,10 +33,10 @@
   max-width: 1350px;
 
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1.2fr 1fr;
 
   align-items: center;
-  gap: 5rem;
+  gap: 3rem;
 
   position: relative;
   z-index: 10;
@@ -61,15 +60,13 @@
 
   border-radius: 999px;
 
-  background: rgba(127, 90, 240, 0.12);
+  background: rgba(var(--accent-rgb), 0.12);
 
-  border: 1px solid rgba(127, 90, 240, 0.3);
+  border: 1px solid rgba(var(--accent-rgb), 0.3);
 
-  color: var(--highlight-color);
+  color: var(--accent);
 
   font-size: 0.9rem;
-
-  backdrop-filter: blur(12px);
 
   position: relative;
   z-index: 20;
@@ -77,8 +74,9 @@
 
 /* TITLE */
 .hero-title {
-  font-size: clamp(2.8rem, 5vw, 4.8rem);
-  font-weight: 800;
+  margin: 0; /* sinon la marge par défaut du h1 (0,67em) s'ajoute au gap */
+  font-size: clamp(2.8rem, 5vw, 4.6rem);
+  font-weight: 700;
   line-height: 1.1;
 
   color: var(--text);
@@ -93,19 +91,22 @@
 .gradient-text {
   background: linear-gradient(
     90deg,
-    #7f5af0,
-    #a78bfa,
-    var(--text)
+    var(--brand),
+    var(--brand-2),
+    var(--brand)
   );
+  background-size: 200% 100%;
+  animation: brandFlow 6s ease-in-out infinite;
 
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 
-  text-shadow: 0 0 30px rgba(127, 90, 240, 0.25);
+  text-shadow: none;
 }
 
 /* DESCRIPTION */
 .hero-description {
+  margin: 0;
   max-width: 620px;
 
   font-size: 1.08rem;
@@ -135,19 +136,20 @@
 
   padding: 1rem 1.7rem;
 
-  border-radius: 15px;
+  border-radius: var(--radius);
 
   text-decoration: none;
 
-  background: var(--button-bg);
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  background-size: 200% 100%;
 
   color: #fff;
 
   font-weight: 600;
 
-  transition: 0.3s ease;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), background-position 0.4s var(--ease);
 
-  box-shadow: 0 10px 30px rgba(127, 90, 240, 0.35);
+  box-shadow: 0 8px 24px rgba(var(--brand-rgb), 0.25);
 
   position: relative;
   z-index: 20;
@@ -155,10 +157,11 @@
 
 .primary-btn:hover {
   transform: translateY(-4px);
+  text-decoration: none;
 
-  background: var(--button-hover);
+  background-position: 100% 0;
 
-  box-shadow: 0 15px 40px rgba(127, 90, 240, 0.5);
+  box-shadow: 0 12px 30px rgba(var(--brand-rgb), 0.35);
 }
 
 .primary-btn:active {
@@ -178,7 +181,7 @@
   width: 50px;
   height: 50px;
 
-  border-radius: 15px;
+  border-radius: var(--radius);
 
   display: flex;
   align-items: center;
@@ -188,23 +191,25 @@
 
   color: var(--text);
 
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--card-bg);
 
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--card-border);
 
-  backdrop-filter: blur(18px);
+  transition: transform 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
 
-  transition: 0.3s ease;
+/* chaque réseau garde sa couleur officielle (--c posé dans Hero.js) */
+.hero-socials a {
+  color: var(--c, var(--text));
 }
 
 .hero-socials a:hover {
   transform: translateY(-5px) scale(1.05);
 
-  border-color: var(--highlight-color);
+  border-color: var(--c, var(--brand));
 
-  color: var(--highlight-color);
-
-  box-shadow: 0 10px 30px rgba(127, 90, 240, 0.3);
+  box-shadow: 0 10px 30px rgba(var(--accent-rgb), 0.25);
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--c, var(--brand)) 30%, transparent);
 }
 
 /* RIGHT */
@@ -239,9 +244,9 @@
 
   box-shadow:
     0 20px 60px rgba(0,0,0,0.2),
-    0 0 40px rgba(127,90,240,0.2);
+    0 0 40px rgba(var(--accent-rgb),0.2);
 
-  transition: 0.6s ease;
+  transition: transform 0.5s var(--ease);
 }
 
 .hero-image:hover {
@@ -254,7 +259,7 @@
 
   padding: 0.9rem 1.1rem;
 
-  border-radius: 16px;
+  border-radius: var(--radius);
 
   background: rgba(255, 255, 255, 0.06);
 
@@ -304,7 +309,7 @@
   width: 320px;
   height: 320px;
 
-  background: rgba(127, 90, 240, 0.15);
+  background: rgba(var(--accent-rgb), 0.15);
 
   top: -100px;
   left: -100px;
@@ -314,7 +319,7 @@
   width: 280px;
   height: 280px;
 
-  background: rgba(127, 90, 240, 0.12);
+  background: rgba(var(--accent-rgb), 0.12);
 
   bottom: -100px;
   right: -100px;
@@ -362,7 +367,7 @@
 @media (max-width: 640px) {
 
   .hero {
-    padding-top: 7rem;
+    padding: 6rem 1.25rem 2.5rem;
   }
 
   .hero-title {
@@ -395,15 +400,31 @@
   }
 }
 
-/* TYPEWRITER */
+/* TYPEWRITER
+   Le nom complet est rendu en fantôme (invisible) dans la même cellule que le
+   texte tapé : la hauteur du titre ne change plus pendant l'animation, donc les
+   boutons en dessous ne bougent pas sous le curseur. */
+.typing-wrap {
+  display: inline-grid;
+  vertical-align: top;
+}
+
+.typing-wrap > * {
+  grid-area: 1 / 1;
+}
+
+.typing-ghost {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .typing-text {
-  display: inline-flex;
-  align-items: center;
+  display: inline;
 }
 
 .cursor {
   margin-left: 6px;
-  color: #7f5af0;
+  color: var(--brand-2);
   font-weight: 400;
   animation: blink 0.8s infinite;
 }
@@ -411,4 +432,176 @@
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
+}
+/* dégradé qui respire lentement sur le nom et le bouton */
+@keyframes brandFlow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ===== Accroche au-dessus du titre ===== */
+.hero-tagline {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+}
+
+/* ===== Bouton secondaire (CV) =====
+   Au survol : un voile orange glisse de gauche à droite derrière le texte,
+   l'icône « mime » le téléchargement (petit rebond vers le bas) et le
+   bouton se soulève avec une ombre chaude. Tout reste dans la couleur unique. */
+.secondary-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: fit-content;
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius);
+  text-decoration: none;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--card-border);
+  font-weight: 600;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    border-color 0.2s var(--ease),
+    color 0.2s var(--ease),
+    transform 0.25s var(--ease),
+    box-shadow 0.25s var(--ease);
+}
+
+/* voile qui glisse */
+.secondary-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--brand);
+  transform: translateX(-101%);
+  transition: transform 0.4s var(--ease);
+  z-index: -1;
+}
+
+/* reflet discret qui traverse après le voile */
+.secondary-btn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -40%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+  transform: skewX(-18deg);
+  opacity: 0;
+  z-index: -1;
+}
+
+.secondary-btn svg {
+  transition: transform 0.4s var(--ease);
+}
+
+.secondary-btn:hover,
+.secondary-btn:focus-visible {
+  transform: translateY(-3px);
+  border-color: var(--brand);
+  color: #fff;
+  text-decoration: none;
+  box-shadow: 0 12px 30px rgba(var(--brand-rgb), 0.28);
+}
+
+.secondary-btn:hover::before,
+.secondary-btn:focus-visible::before {
+  transform: translateX(0);
+}
+
+.secondary-btn:hover::after {
+  animation: cvShine 0.8s var(--ease) forwards;
+}
+
+.secondary-btn:hover svg {
+  animation: cvDrop 0.7s var(--ease);
+}
+
+.secondary-btn:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+@keyframes cvShine {
+  0%   { left: -40%; opacity: 0; }
+  20%  { opacity: 1; }
+  100% { left: 120%; opacity: 0; }
+}
+
+/* rebond de l'icône : elle « tombe » dans le bac */
+@keyframes cvDrop {
+  0%   { transform: translateY(0); }
+  35%  { transform: translateY(4px); }
+  60%  { transform: translateY(-2px); }
+  100% { transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .secondary-btn::before,
+  .secondary-btn::after,
+  .secondary-btn svg { transition: none; animation: none !important; }
+}
+
+.hero-actions {
+  flex-wrap: wrap;
+}
+
+/* ===== Indicateur de défilement ===== */
+.hero-scroll {
+  position: absolute;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: var(--accent-2);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  z-index: 20;
+  transition: color 0.3s;
+}
+
+.hero-scroll:hover { color: var(--brand); }
+
+.hero-scroll-line {
+  width: 1px;
+  height: 44px;
+  background: currentColor;
+  opacity: 0.5;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-scroll-line::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -100%;
+  width: 100%;
+  height: 100%;
+  background: var(--brand);
+  animation: heroScroll 2.2s var(--ease) infinite;
+}
+
+@keyframes heroScroll {
+  0%   { top: -100%; }
+  60%  { top: 100%; }
+  100% { top: 100%; }
+}
+
+@media (max-width: 640px) {
+  .secondary-btn { width: 100%; justify-content: center; }
+  .hero-scroll { display: none; }
 }

@@ -68,14 +68,73 @@
 }
 
 .nav-links li a {
+  position: relative;
   color: var(--nav-text);
   text-decoration: none;
   font-weight: 500;
+  padding-bottom: 4px;
   transition: color 0.3s;
 }
 
+.nav-links li a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--brand);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.45s var(--ease);
+}
+
 .nav-links li a:hover {
-  color: var(--link-hover);
+  color: var(--brand);
+}
+
+.nav-links li a.active {
+  color: var(--text);
+}
+
+.nav-links li a.active::after,
+.nav-links li a:hover::after {
+  transform: scaleX(1);
+}
+
+.lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 5px 11px 5px 6px;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  background: transparent;
+  color: var(--nav-text);
+  cursor: pointer;
+  margin-left: 4px;
+  transition: border-color 0.3s, color 0.3s, background 0.3s;
+}
+
+.lang-toggle svg {
+  flex: 0 0 auto;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+  transition: transform 0.25s var(--ease);
+}
+
+.lang-toggle:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.lang-toggle:hover svg {
+  transform: scale(1.15) rotate(-8deg);
 }
 
 .dark-toggle {
@@ -92,6 +151,16 @@
   transform: scale(1.2);
 }
 
+.dark-toggle-ico,
+.lang-toggle-inner,
+.lang-toggle-flag {
+  display: inline-flex;
+  align-items: center;
+}
+
+.lang-toggle-inner { gap: 7px; }
+.lang-toggle-flag { perspective: 200px; }
+
 .burger {
   display: none;
   cursor: pointer;
@@ -106,7 +175,7 @@
   width: 25px;
   height: 3px;
   background-color: var(--nav-text);
-  transition: all 0.3s ease;
+  transition: transform 0.2s var(--ease), border-color 0.2s var(--ease), background-color 0.2s var(--ease), color 0.2s var(--ease), box-shadow 0.2s var(--ease), opacity 0.2s var(--ease);
 }
 
 .burger.toggle .line1 {
@@ -164,6 +233,12 @@
     position: fixed;
     top: 20px;
     right: 65px;
+  }
+
+  .lang-toggle {
+    position: fixed;
+    top: 21px;
+    right: 112px;
   }
 
   body.menu-open {

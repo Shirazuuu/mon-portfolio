@@ -2,42 +2,75 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Arial', sans-serif;
+  font-family: var(--font-body);
   overflow-x: hidden;
   transition: background 0.3s ease, color 0.3s ease;
 }
 
+/* ======= TOKENS DE DESIGN ======= */
+:root {
+  --font-display: 'Manrope', 'Inter', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-lg: 20px;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.14);
+
+  --space-section: clamp(64px, 8vw, 110px);
+  --space-block: 40px;
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 /* Mode clair (par défaut) */
 :root {
-  --bg: #ffffff;
-  --text: #111;
-  --subtitle: #555;
-  --section-bg: #f5f5f5;
-  --card-bg: #f0f0f0;
-  --card-border: #ccc;
-  --bar-bg: #ddd;
-  --nav-bg: rgba(255,255,255,0.9);
-  --nav-text: #111;
-  --link-hover: #7f5af0;
-  --tool-bg: #e0e0e0;
-  --tool-text: #111;
-  --soft-bg: #f0f0f0;
+  --bg: #F0F0F0;
+  --text: #1A1A1A;
+  --subtitle: #4A4A4A;
+  --accent: #1A1A1A;
+  --accent-2: #8A8A8A;
+  --accent-rgb: 26, 26, 26;
+  --accent2-rgb: 138, 138, 138;
+  --brand: #e7905a;
+  --brand-2: #e7905a;
+  --brand-rgb: 231, 144, 90;
+  --section-bg: #F8F8F8;
+  --card-bg: #F8F8F8;
+  --card-border: #C8C8C8;
+  --bar-bg: #C8C8C8;
+  --nav-bg: rgba(240, 240, 240, 0.9);
+  --nav-text: #1A1A1A;
+  --link-hover: #8A8A8A;
+  --tool-bg: #F8F8F8;
+  --tool-text: #1A1A1A;
+  --soft-bg: #F8F8F8;
 }
 
 /* Mode sombre */
 body.dark {
-  --bg: #0f172a;
-  --text: #ffffff;
-  --subtitle: #bbb;
-  --section-bg: #0a0a0a;
-  --card-bg: #1a1a1a;
-  --card-border: #2a2a2a;
-  --bar-bg: #333;
-  --nav-bg: rgba(0,0,0,0.85);
-  --nav-text: #ffffff;
-  --tool-bg: #1a1a1a;
-  --tool-text: #ffffff;
-  --soft-bg: #1a1a1a;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.5);
+  --bg: #0F0F0F;
+  --text: #F5F5F5;
+  --subtitle: #C8C8C8;
+  --accent: #F5F5F5;
+  --accent-2: #8A8A8A;
+  --accent-rgb: 245, 245, 245;
+  --accent2-rgb: 138, 138, 138;
+  --brand: #e7905a;
+  --brand-2: #e7905a;
+  --brand-rgb: 231, 144, 90;
+  --section-bg: #1A1A1A;
+  --card-bg: #1A1A1A;
+  --card-border: #4A4A4A;
+  --bar-bg: #4A4A4A;
+  --nav-bg: rgba(15, 15, 15, 0.85);
+  --nav-text: #F5F5F5;
+  --tool-bg: #1A1A1A;
+  --tool-text: #F5F5F5;
+  --soft-bg: #1A1A1A;
 }
 
 /* Appliquer les couleurs */
@@ -46,9 +79,75 @@ body {
   color: var(--text);
 }
 
-/* Transition globale */
+/* Titres : Manrope, un peu plus légers, resserrés */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+/* Transition globale (thème) */
 * {
-  transition: background 0.3s ease, color 0.3s ease;
+  transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease;
+}
+
+/* Libellé numéroté au-dessus des titres de section */
+.section-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--accent-2);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 8px;
+}
+.section-kicker::before {
+  content: "";
+  width: 24px;
+  height: 2px;
+  background: var(--brand);
+  border-radius: 1px;
+}
+
+/* Titres mot à mot */
+.wr-word {
+  display: inline-block;
+  font-style: normal;
+  will-change: transform, opacity;
+}
+
+/* Barre de progression de lecture */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--brand);
+  transform-origin: left center;
+  z-index: 10002;
+  pointer-events: none;
+}
+
+/* Focus clavier visible */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 3px;
+}
+
+/* Moins d'animations si l'utilisateur le demande */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001s !important;
+  }
 }
 
 a {
@@ -56,3 +155,101 @@ a {
   text-decoration: none;
 }
 
+/* ======= LARGEUR MAXIMALE DU SITE ======= */
+:root {
+  --site-max: 1100px;
+  --site-gutter: 24px;
+}
+
+/* Contenu centré dans une colonne de 1100px max.
+   Les fonds (hero, footer, navbar) restent pleine largeur ; seul le contenu est contraint. */
+.hero-wrapper,
+.about-container,
+.skills-container,
+.pj-section,
+.contact-container,
+.footer-container,
+.footer-bottom {
+  width: 100%;
+  max-width: var(--site-max);
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+.about-container,
+.skills-container,
+.pj-section,
+.contact-container { padding-left: var(--site-gutter); padding-right: var(--site-gutter); }
+.footer            { padding-left: var(--site-gutter); padding-right: var(--site-gutter); }
+
+/* Navbar fixe : fond pleine largeur, contenu aligne sur la colonne */
+.navbar {
+  padding-left:  max(2rem, calc((100% - var(--site-max)) / 2 + var(--site-gutter)));
+  padding-right: max(2rem, calc((100% - var(--site-max)) / 2 + var(--site-gutter)));
+}
+
+@media (max-width: 768px) {
+  :root { --site-gutter: 16px; }
+  .navbar { padding-left: 1rem; padding-right: 1rem; }
+}
+
+/* =====================================================================
+   TRANSITIONS DE PAGE (View Transitions API) : voir src/viewTransition.js
+   ===================================================================== */
+::view-transition-group(root),
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.18s;
+  animation-timing-function: var(--ease);
+}
+
+/* Pendant le changement de thème, les transitions CSS de couleur de tous les
+   éléments sont coupées : sinon des centaines de cartes, tags et boutons
+   repeignent la page à chaque image pendant 0,2 s (≈ 20 img/s mesurées).
+   Le fondu est assuré par la View Transition, pas par les éléments. */
+html[data-vt="theme"] *,
+html[data-vt="theme"] *::before,
+html[data-vt="theme"] *::after {
+  transition: none !important;
+}
+
+/* Thème : le nouveau rendu apparaît en fondu depuis le bouton soleil / lune.
+   Uniquement opacity + transform (composés sur le GPU) : un cercle en clip-path
+   forçait un nouveau rendu de toute la page à chaque image (13 à 24 img/s). */
+html[data-vt="theme"]::view-transition-group(root) {
+  animation-duration: 0.22s;
+}
+
+html[data-vt="theme"]::view-transition-old(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html[data-vt="theme"]::view-transition-new(root) {
+  animation: vtFromButton 0.22s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+  transform-origin: var(--vt-x, 50%) var(--vt-y, 50%);
+  mix-blend-mode: normal;
+}
+
+@keyframes vtFromButton {
+  from { opacity: 0; transform: scale(0.965); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Langue : l'ancien texte s'efface vers le haut, le nouveau arrive du bas */
+html[data-vt="lang"]::view-transition-old(root) {
+  animation: vtOut 0.08s ease both;
+}
+
+html[data-vt="lang"]::view-transition-new(root) {
+  animation: vtIn 0.16s var(--ease) both;
+}
+
+@keyframes vtOut {
+  to { opacity: 0; transform: translateY(-4px); }
+}
+
+@keyframes vtIn {
+  from { opacity: 0; transform: translateY(6px); }
+}

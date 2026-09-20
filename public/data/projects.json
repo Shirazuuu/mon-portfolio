@@ -1,51 +1,80 @@
 [
   {
+    "id": 4,
+    "slug": "greenz",
+    "categories": ["Web", "IA"],
+    "title": "GreenZ : Pilotage intelligent d'exploitations agricoles",
+    "title_en": "GreenZ: Smart farm management platform",
+    "description": "Plateforme SaaS en ligne (greenz.mg) qui réunit parcelles, cultures, élevage, tâches, ressources, finances et marketplace sur un seul tableau de bord, en français, anglais et malgache. Trois agents IA (conseil quotidien, diagnostic photo, prévision de rendement) accompagnent les producteurs. Front Next.js et Tailwind, API FastAPI, application installable (PWA), offres par abonnement avec paiement mobile money.",
+    "description_en": "Live SaaS platform (greenz.mg) bringing plots, crops, livestock, tasks, resources, finances and a marketplace together on a single dashboard, in French, English and Malagasy. Three AI agents (daily advice, photo diagnosis, yield forecasting) support farmers. Next.js and Tailwind front end, FastAPI back end, installable PWA, subscription plans with mobile money payment.",
+    "tags": ["Next.js", "Tailwind CSS", "FastAPI", "Intégration IA", "PWA"],
+    "github": "",
+    "demo": "https://greenz.mg/",
+    "image": "/greenz/greenz.webp",
+    "images": [
+      "/greenz/1.webp",
+      "/greenz/2.webp",
+      "/greenz/3.webp",
+      "/greenz/4.webp",
+      "/greenz/5.webp"
+    ]
+  },
+  {
     "id": 1,
+    "slug": "e-conge",
     "categories": ["Web"],
     "title": "E-congé : Application de gestion des absences",
+    "title_en": "E-congé: Leave management application",
     "description": "Application web développée en PHP avec une base de données MySQL pour gérer efficacement les informations des employés et leurs demandes de congés. Inclut un système de validation des absences, un tableau de bord administrateur et la gestion des droits par rôle.",
+    "description_en": "Web application built with PHP and a MySQL database to manage employee records and leave requests efficiently. Includes an absence validation workflow, an admin dashboard and role-based permissions.",
     "tags": ["PHP", "MySQL", "HTML", "CSS", "JavaScript"],
     "github": "https://github.com/Tommy-ZzZ/Gestion-des-employ-et-cong-personnel",
     "demo": "https://gestion-des-employ-et-cong.vercel.app/",
-    "image": "/e-conge/absence.png",
+    "image": "/e-conge/absence.webp",
     "images": [
-      "/e-conge/1.png",
-      "/e-conge/2.png",
-      "/e-conge/3.png",
-      "/e-conge/4.png",
-      "/e-conge/5.png"
+      "/e-conge/1.webp",
+      "/e-conge/2.webp",
+      "/e-conge/3.webp",
+      "/e-conge/4.webp",
+      "/e-conge/5.webp"
     ]
   },
   {
     "id": 2,
+    "slug": "e-pharma",
     "categories": ["Web", "Mobile"],
     "title": "E-Pharma : Application de gestion pharmaceutique",
+    "title_en": "E-Pharma: Pharmacy management application",
     "description": "Plateforme complète de gestion de clientèle et de commande de produits pharmaceutiques, développée avec React pour le web et React Native pour le mobile. Permet la gestion du catalogue produits, le suivi des commandes et l'administration du stock avec PostgreSQL.",
+    "description_en": "Complete platform for customer management and pharmaceutical product ordering, built with React for the web and React Native for mobile. Handles the product catalogue, order tracking and stock administration with PostgreSQL.",
     "tags": ["React", "React Native", "PostgreSQL", "JavaScript", "CSS"],
     "github": "https://github.com/Tommy-ZzZ/Mon-projet-Pharma",
     "demo": "",
-    "image": "/pharma/pharma.png",
+    "image": "/pharma/pharma.webp",
     "images": [
-      "/pharma/1.png",
-      "/pharma/2.png",
-      "/pharma/3.png",
-      "/pharma/11.png"
+      "/pharma/1.webp",
+      "/pharma/2.webp",
+      "/pharma/3.webp",
+      "/pharma/11.webp"
     ]
   },
   {
     "id": 3,
+    "slug": "e-notes",
     "categories": ["Web"],
     "title": "E-Notes : Gestion des Notes",
+    "title_en": "E-Notes: Notes management",
     "description": "Application moderne de gestion de notes offrant une expérience utilisateur fluide et efficace. Permet de créer, organiser, modifier et sécuriser vos notes avec une interface responsive conçue avec React.",
+    "description_en": "Modern notes application offering a smooth and efficient user experience. Create, organise, edit and secure your notes through a responsive interface built with React.",
     "tags": ["React", "JavaScript", "CSS", "Responsive"],
     "github": "https://github.com/Tommy-ZzZ/Gestion-notes",
     "demo": "https://gestion-notes-lilac.vercel.app/",
-    "image": "/notes/note.png",
+    "image": "/notes/note.webp",
     "images": [
-      "/notes/1.png",
-      "/notes/2.png",
-      "/notes/3.png",
-      "/notes/4.png"
+      "/notes/1.webp",
+      "/notes/2.webp",
+      "/notes/3.webp",
+      "/notes/4.webp"
     ]
   }
 ]

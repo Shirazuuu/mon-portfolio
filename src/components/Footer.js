@@ -1,83 +1,59 @@
 import React from "react";
 import "../css/Footer.css";
-import { FaLinkedin, FaEnvelope, FaFacebook, FaWhatsapp, FaTelegram } from "react-icons/fa";
+import { FaLinkedin, FaEnvelope, FaFacebook, FaWhatsapp, FaTelegram, FaArrowUp } from "react-icons/fa";
+import Reveal from "./Reveal";
+import { useLang } from "../i18n/LanguageContext";
 
 export default function Footer() {
+  const { t } = useLang();
+  const f = t.footer;
+  const year = new Date().getFullYear();
+
   return (
     <footer className="footer">
       <div className="footer-container">
         {/* Colonne gauche */}
-        <div className="footer-left">
-          <h2>
-            <span>Maheriniaina</span> Tommy
-          </h2>
-          <p>
-            Développeur passionné, spécialisé dans les technologies JavaScript. Fort de plusieurs années d’expérience,
-            je conçois des applications web et mobiles modernes, performantes et intuitives. Mon expertise
-            couvre l’ensemble du développement full-stack, de la conception UI/UX jusqu’à la mise en production.
-          </p>
-        </div>
+        <Reveal className="footer-left" distance={20} blur={4} amount={0.3}>
+          <h2><span>Maheriniaina</span> Tommy</h2>
+          <p>{f.description}</p>
+        </Reveal>
 
         {/* Colonne centre */}
-        <div className="footer-center">
-          <h3>Navigation</h3>
+        <Reveal className="footer-center" distance={20} blur={4} delay={0.08} amount={0.3}>
+          <h3>{f.navigation}</h3>
           <ul>
-            <li><a href="#home">Accueil</a></li>
-            <li><a href="#about">À propos</a></li>
-            <li><a href="#projects">Projets</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li><a href="#home">{t.nav.home}</a></li>
+            <li><a href="#services">{t.nav.services}</a></li>
+            <li><a href="#about">{t.nav.about}</a></li>
+            <li><a href="#skills">{t.nav.skills}</a></li>
+            <li><a href="#projects">{t.nav.projects}</a></li>
+            <li><a href="#contact">{t.nav.contact}</a></li>
           </ul>
-        </div>
+        </Reveal>
 
         {/* Colonne droite */}
-        <div className="footer-right">
-          <h3>Restons connectés</h3>
+        <Reveal className="footer-right" distance={20} blur={4} delay={0.16} amount={0.3}>
+          <h3>{f.connect}</h3>
           <p><a href="mailto:tommymaheriniaina@gmail.com">tommymaheriniaina@gmail.com</a></p>
           <p><a href="tel:+261345316018">+261 34 53 160 18</a></p>
           <p>Fianarantsoa, Madagascar</p>
 
           <div className="social-icons">
-            {/* LinkedIn */}
-            <a href="https://www.linkedin.com/in/tommy-maheriniaina-212822261" target="_blank" rel="noreferrer"><FaLinkedin /></a>
-
-            {/* Email vers Gmail */}
-            <a 
-              href="https://mail.google.com/mail/?view=cm&to=tommymaheriniaina@gmail.com" 
-              target="_blank" 
-              rel="noreferrer"
-            >
-              <FaEnvelope />
-            </a>
-
-            {/* Facebook */}
-            <a href="https://www.facebook.com/tommy.69D.Gun" target="_blank" rel="noreferrer"><FaFacebook /></a>
-
-            {/* WhatsApp */}
-            <a 
-              href="https://wa.me/261345316018" 
-              target="_blank" 
-              rel="noreferrer"
-            >
-              <FaWhatsapp />
-            </a>
-
-            {/* Telegram */}
-            <a 
-              href="https://t.me/261345316018" 
-              target="_blank" 
-              rel="noreferrer"
-            >
-              <FaTelegram />
-            </a>
+            <a href="https://www.linkedin.com/in/tommy-maheriniaina-212822261" target="_blank" rel="noreferrer" aria-label="LinkedIn" style={{ "--c": "#0A66C2" }}><FaLinkedin /></a>
+            <a href="https://mail.google.com/mail/?view=cm&to=tommymaheriniaina@gmail.com" target="_blank" rel="noreferrer" aria-label="Email" style={{ "--c": "#EA4335" }}><FaEnvelope /></a>
+            <a href="https://www.facebook.com/tommy.69D.Gun" target="_blank" rel="noreferrer" aria-label="Facebook" style={{ "--c": "#1877F2" }}><FaFacebook /></a>
+            <a href="https://wa.me/261345316018" target="_blank" rel="noreferrer" aria-label="WhatsApp" style={{ "--c": "#25D366" }}><FaWhatsapp /></a>
+            <a href="https://t.me/261345316018" target="_blank" rel="noreferrer" aria-label="Telegram" style={{ "--c": "#26A5E4" }}><FaTelegram /></a>
           </div>
-        </div>
+        </Reveal>
       </div>
 
       {/* Bas du footer */}
-      <div className="footer-bottom">
-        <p>© 2025 Maheriniaina Tommy. Tous droits réservés.</p>
-        <p>Fait avec <span className="heart">♡</span> et beaucoup de ☕</p>
-      </div>
+      <Reveal className="footer-bottom" distance={12} blur={3} amount={0.5}>
+        <p>© {year} Maheriniaina Tommy. {f.rights}</p>
+        <p>{f.madeWith} <span className="heart">♡</span> {f.andCoffee}</p>
+        <a href="#home" className="back-to-top"><FaArrowUp /> {f.backToTop}</a>
+      </Reveal>
     </footer>
   );
 }

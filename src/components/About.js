@@ -1,126 +1,206 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  motion,
+  animate,
+  useScroll,
+  useSpring,
+  useTransform,
+  useMotionValueEvent,
+  useReducedMotion,
+} from "framer-motion";
 import "../css/About.css";
-import profilePic from "../assets/nice.png";
+import profilePic from "../assets/nice.webp";
 import { FaBriefcase, FaGraduationCap } from "react-icons/fa";
+import Reveal from "./Reveal";
+import WordReveal from "./WordReveal";
+import { useLang, renderBold } from "../i18n/LanguageContext";
+
+/* ================= SOUS-COMPOSANTS ================= */
+
+/* Pourcentage affiché (isolé pour ne re-rendre que ce nœud) */
+function Percent({ progress, className }) {
+  const [pct, setPct] = useState(0);
+  useMotionValueEvent(progress, "change", v => {
+    const p = Math.round(v * 100);
+    setPct(prev => (prev === p ? prev : p));
+  });
+  return <span className={className}>{pct}%</span>;
+}
+
+/* Checkpoints sur la barre : s'allument quand le remplissage les dépasse */
+function TrackNodes({ progress, nodes }) {
+  const [active, setActive] = useState("");
+  const compute = v => {
+    const key = nodes.map(n => (v >= n.ratio ? "1" : "0")).join("");
+    setActive(prev => (prev === key ? prev : key));
+  };
+  useMotionValueEvent(progress, "change", compute);
+  useEffect(() => { compute(progress.get()); }, [nodes]); // eslint-disable-line react-hooks/exhaustive-deps
+  return nodes.map((n, i) => (
+    <span
+      key={i}
+      className={`xp-node ${n.side} ${active[i] === "1" ? "active" : ""}`}
+      style={{ top: `${n.ratio * 100}%` }}
+    />
+  ));
+}
+
+/* Compteur animé façon score de jeu */
+function StatNumber({ value, suffix, inView }) {
+  const ref = useRef(null);
+  const reduce = useReducedMotion();
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (reduce) { el.textContent = value + suffix; return; }
+
+    const from = Number(el.dataset.current || 0);
+    const controls = animate(from, inView ? value : 0, {
+      duration: inView ? 1.4 : 0.5,
+      ease: inView ? [0.16, 1, 0.3, 1] : [0.4, 0, 0.6, 1],
+      onUpdate: v => {
+        el.dataset.current = v;
+        el.textContent = Math.round(v) + suffix;
+      },
+    });
+    return () => controls.stop();
+  }, [inView, value, suffix, reduce]);
+
+  return <h3 ref={ref}>0{suffix}</h3>;
+}
+
+/* ================= COMPOSANT PRINCIPAL ================= */
 
 export default function About() {
-  const experienceRefs = useRef([]);
-  const formationRefs = useRef([]);
-  const timelineRef = useRef(null);
-  const introRef = useRef(null);
-  const [timelineHeight, setTimelineHeight] = useState(0);
-  const [scrollOpacity, setScrollOpacity] = useState(1);
+  const { t } = useLang();
+  const a = t.about;
+  const { experiences, formations, stats } = a;
+  const sectionRef = useRef(null);
+  const itemRefs = useRef([]);
+  const [nodes, setNodes] = useState([]);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add("visible");
-      });
-    }, { threshold: 0.1 });
+  /* --- Barre de progression (XP bar) --- */
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start 0.85", "end 0.4"],
+  });
+  const progress = useSpring(scrollYProgress, { stiffness: 70, damping: 22, mass: 0.5 });
+  const headTop = useTransform(progress, v => `${v * 100}%`);
 
-    [...experienceRefs.current, ...formationRefs.current].forEach(el => el && observer.observe(el));
-
-    return () => observer.disconnect();
+  /* --- Position des checkpoints (mesurée sur le layout, pas sur les transforms) --- */
+  const measure = useCallback(() => {
+    const sec = sectionRef.current;
+    if (!sec) return;
+    const h = sec.offsetHeight;
+    if (!h) return;
+    setNodes(
+      itemRefs.current
+        .filter(Boolean)
+        .map(el => ({ ratio: (el.offsetTop + 30) / h, side: el.dataset.side }))
+    );
   }, []);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (timelineRef.current) {
-        const rect = timelineRef.current.getBoundingClientRect();
-        const winH = window.innerHeight;
-
-        setTimelineHeight(Math.min(rect.height, Math.max(0, winH - rect.top)));
-
-        if (introRef.current) {
-          // ✅ FIX MOBILE : toujours visible sur petits écrans
-          if (window.innerWidth <= 768) {
-            setScrollOpacity(1);
-          } else {
-            const opacity = Math.min(Math.max(rect.bottom / winH, 0), 1);
-            setScrollOpacity(opacity);
-          }
-        }
-      }
+  useLayoutEffect(() => {
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (sectionRef.current) ro.observe(sectionRef.current);
+    window.addEventListener("resize", measure);
+    const t = setTimeout(measure, 600); // après chargement des polices
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+      clearTimeout(t);
     };
-
-    window.addEventListener("scroll", handleScroll);
-    handleScroll();
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const experiences = [
-    { title:"Nov 2025 - Déc 2025 | Projet Master", desc:"App web gestion notes université...", tech:"React.js, Express.js, PostgreSQL, JWT, Docker, Cloud" },
-    { title:"Août 2024 - Nov 2024 | Stage Licence Pro", desc:"App web/mobile gestion clients produits pharmaceutiques...", tech:"React.js, React Native, Node.js, PostgreSQL", entreprise:"SunSoft, Ivato, Antananarivo" },
-    { title:"Août 2023 - Nov 2023 | Stage Licence Pro", desc:"App web gestion congés personnel JIRAMA Fianarantsoa...", tech:"PHP, MySQL" }
-  ];
-
-  const formations = [
-    { title:"2022 - 2026 | Licence / Master", school:"Université ENI, Fianarantsoa", desc:"2026 : 2e Master\n2025 : 1re Master\n2024 : 3e Licence\n2023 : 2e Licence\n2022 : 1re Licence", link:"https://www.eni.mg" },
-    { title:"Baccalauréat Scientifique", school:"Lycée Saint Joseph de Cluny, Fianarantsoa", desc:"2020-2021 | Série D mention Bien" }
-  ];
+  }, [measure]);
 
   return (
     <div className="about-container" id="about">
       <div className="about-text">
-        <h2>À propos de <span>moi</span></h2>
+        <Reveal as="span" className="section-kicker" distance={12} blur={4}>02</Reveal>
+        <WordReveal as="h2" text={a.title} accent={a.accent} />
 
         <div className="about-intro">
-          <div className="about-photo">
-            <img src={profilePic} alt="profil" />
-          </div>
+          <Reveal className="about-photo" scale={0.88} rotate={-6} blur={10} amount={0.3}>
+            <img src={profilePic} alt="Maheriniaina Tommy" width="600" height="400" loading="lazy" />
+          </Reveal>
 
-          <p
-            ref={introRef}
-            style={{ opacity: scrollOpacity, transition: "opacity 0.5s ease" }}
-          >
-            Je m'appelle <b>Maheriniaina Tommy</b>, développeur Fullstack et designer graphique.
-            Passionné par le développement et l'apprentissage continu, j'ai découvert ma vocation
-            dans le monde du code il y a quelques années. Actuellement, je me forme intensivement
-            aux technologies <b>JavaScript</b> et développe mes compétences chaque jour pour créer
-            des solutions digitales modernes.<br/><br/>
-
-            Mon approche repose sur la pratique régulière et l'amélioration continue. Chaque projet
-            est une opportunité d'apprendre quelque chose de nouveau et de perfectionner mes compétences
-            techniques et créatives.<br/><br/>
-
-            Basé à Madagascar, je suis toujours prêt à collaborer sur des projets stimulants qui me permettent de continuer à évoluer en tant que développeur.
-          </p>
+          <Reveal as="p" distance={28} blur={6} delay={0.1} amount={0.15}>
+            {a.intro.map((para, i) => (
+              <React.Fragment key={i}>
+                {renderBold(para)}
+                {i < a.intro.length - 1 && <><br /><br /></>}
+              </React.Fragment>
+            ))}
+          </Reveal>
         </div>
       </div>
 
-      <div className="experience-formation">
+      <div className="experience-formation" ref={sectionRef}>
+
+        {/* HUD mobile : barre horizontale sticky */}
+        <div className="xp-hud" aria-hidden="true">
+          <span className="xp-hud-label">{a.progress}</span>
+          <div className="xp-hud-track">
+            <motion.div className="xp-hud-fill" style={{ scaleX: progress }} />
+          </div>
+          <Percent progress={progress} className="xp-hud-pct" />
+        </div>
+
         <div className="experience">
-          <h2><FaBriefcase className="section-icon"/> Expériences</h2>
+          <Reveal as="h2" side={-1} distance={16} blur={4}>
+            <FaBriefcase className="section-icon"/> {a.experiencesTitle}
+          </Reveal>
 
           {experiences.map((exp, i) => (
-            <div key={i} className="experience-item" ref={el => experienceRefs.current[i] = el}>
+            <Reveal
+              key={i}
+              className="experience-item"
+              side={-1}
+              innerRef={el => { itemRefs.current[i] = el; }}
+              data-side="left"
+            >
               <h3>{exp.title}</h3>
               <p>{exp.desc}</p>
-              {exp.entreprise && <p><b>Entreprise :</b> {exp.entreprise}</p>}
-              <p><b>Technologies :</b> {exp.tech}</p>
-              <span className="timeline-point"></span>
-            </div>
+              {exp.company && <p><b>{a.company} :</b> {exp.company}</p>}
+              <p><b>{a.technologies} :</b> {exp.tech}</p>
+            </Reveal>
           ))}
         </div>
 
-        <div className="vertical-line-container">
-          <div
-            className="vertical-line-fill"
-            ref={timelineRef}
-            style={{ height: `${timelineHeight}px` }}
-          ></div>
+        {/* Barre XP verticale (desktop) */}
+        <div className="xp-track" aria-hidden="true">
+          <div className="xp-track-inner">
+            <motion.div className="xp-fill" style={{ scaleY: progress }} />
+            <div className="xp-ticks" />
+          </div>
+          <TrackNodes progress={progress} nodes={nodes} />
+          <motion.div className="xp-comet" style={{ top: headTop }} />
+          <motion.div className="xp-head" style={{ top: headTop }}>
+            <span className="xp-sparks" aria-hidden="true">
+              <i /><i /><i /><i /><i /><i /><i /><i />
+            </span>
+            <Percent progress={progress} className="xp-label" />
+          </motion.div>
         </div>
 
         <div className="formation">
-          <h2><FaGraduationCap className="section-icon"/> Formation</h2>
+          <Reveal as="h2" side={1} distance={16} blur={4}>
+            <FaGraduationCap className="section-icon"/> {a.formationsTitle}
+          </Reveal>
 
           {formations.map((form, i) => (
-            <div key={i} className="formation-item" ref={el => formationRefs.current[i] = el}>
+            <Reveal
+              key={i}
+              className="formation-item"
+              side={1}
+              innerRef={el => { itemRefs.current[experiences.length + i] = el; }}
+              data-side="right"
+            >
               <h3>{form.title}</h3>
               <p><b>{form.school}</b></p>
               <p>
-                {form.desc.split("\n").map((line, idx) => (
+                {form.lines.map((line, idx) => (
                   <span key={idx}>{line}<br/></span>
                 ))}
               </p>
@@ -129,17 +209,33 @@ export default function About() {
                   {form.link}
                 </a>
               )}
-              <span className="timeline-point"></span>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>
 
       <div className="stats">
-        <div><h3>6+</h3><p>Projets personnels</p></div>
-        <div><h3>4</h3><p>Apps en développement</p></div>
-        <div><h3>5+</h3><p>Langages maîtrisés</p></div>
-        <div><h3>100%</h3><p>Motivation</p></div>
+        {stats.map((s, i) => (
+          <Reveal
+            key={i}
+            scale={0.85}
+            blur={6}
+            distance={30}
+            delay={i * 0.08}
+            amount={0.4}
+            whileHover={{ y: -10, scale: 1.05 }}
+          >
+            {inView => (
+              <div className={`stat-inner ${inView ? "lit" : ""}`}>
+                <span className="stat-sparks" aria-hidden="true">
+                  <i /><i /><i /><i /><i /><i />
+                </span>
+                <StatNumber value={s.value} suffix={s.suffix} inView={inView} />
+                <p>{s.label}</p>
+              </div>
+            )}
+          </Reveal>
+        ))}
       </div>
     </div>
   );

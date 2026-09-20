@@ -1,6 +1,11 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "../css/Projects.css";
+import { FaGlobe, FaMobileAlt, FaRobot, FaCogs, FaPills, FaLightbulb, FaGithub, FaExternalLinkAlt, FaEye, FaSearchPlus, FaTimes, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import Reveal from "./Reveal";
+import WordReveal from "./WordReveal";
+import { EASE } from "../motion";
+import { useLang } from "../i18n/LanguageContext";
 
 /* =======================================================
    TECH LOGOS — SVG inline par technologie
@@ -103,7 +108,7 @@ const TECH_LOGOS = {
       <text x="12" y="15" textAnchor="middle" fontSize="7" fontWeight="bold" fill="#E0234E" fontFamily="monospace">N</text>
     </svg>
   ),
-  TailwindCSS: (
+  Tailwind: (
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
       <path d="M12 6C9.6 6 8.1 7.2 7.5 9.6c.9-1.2 1.95-1.65 3.15-1.35.685.171 1.174.668 1.716 1.219C13.269 10.453 14.356 11.6 16.5 11.6c2.4 0 3.9-1.2 4.5-3.6-.9 1.2-1.95 1.65-3.15 1.35-.685-.171-1.174-.668-1.716-1.219C15.231 7.147 14.144 6 12 6zM7.5 11.6C5.1 11.6 3.6 12.8 3 15.2c.9-1.2 1.95-1.65 3.15-1.35.685.171 1.174.668 1.716 1.219C8.769 16.053 9.856 17.2 12 17.2c2.4 0 3.9-1.2 4.5-3.6-.9 1.2-1.95 1.65-3.15 1.35-.685-.171-1.174-.668-1.716-1.219C10.731 12.747 9.644 11.6 7.5 11.6z" fill="#38BDF8"/>
     </svg>
@@ -172,15 +177,16 @@ const getTechLogo = (tag) => {
 ======================================================= */
 const getVisuals = (categories = []) => {
   const map = {
-    Web: { icon: "🌐", gradient: "linear-gradient(135deg, #1a0533 0%, #3a0a66 100%)" },
-    Mobile: { icon: "📱", gradient: "linear-gradient(135deg, #0d1f3c 0%, #1a3a6e 100%)" },
-    IA: { icon: "🤖", gradient: "linear-gradient(135deg, #0f2a20 0%, #1a5c3a 100%)" },
-    DevOps: { icon: "⚙️", gradient: "linear-gradient(135deg, #0d1f1f 0%, #0a3a3a 100%)" },
+    Web: { icon: <FaGlobe />, gradient: "#1A1A1A" },
+    Mobile: { icon: <FaMobileAlt />, gradient: "#4A4A4A" },
+    IA: { icon: <FaRobot />, gradient: "#8A8A8A" },
+    DevOps: { icon: <FaCogs />, gradient: "#4A4A4A" },
   };
   if (categories.includes("Web") && categories.includes("Mobile")) {
-    return { icon: "💊", gradient: "linear-gradient(135deg, #1a0a2e 0%, #2d1060 100%)" };
+    return { icon: <FaPills />, gradient: "#1A1A1A" };
   }
-  return map[categories[0]] || { icon: "💡", gradient: "linear-gradient(135deg, #1a1a1a 0%, #333 100%)" };
+  if (categories.includes("IA")) return map.IA;
+  return map[categories[0]] || { icon: <FaLightbulb />, gradient: "#4A4A4A" };
 };
 
 /* =======================================================
@@ -197,9 +203,17 @@ const TechTag = ({ tag }) => {
 };
 
 /* =======================================================
-   LIGHTBOX IMAGES — modal fluide
+   TEXTES SELON LA LANGUE
 ======================================================= */
-const ImageLightbox = ({ images, startIndex, onClose }) => {
+const localized = (project, lang) => ({
+  title: lang === "en" && project.title_en ? project.title_en : project.title,
+  description: lang === "en" && project.description_en ? project.description_en : project.description,
+});
+
+/* =======================================================
+   LIGHTBOX IMAGES
+======================================================= */
+const ImageLightbox = ({ images, startIndex, onClose, labels }) => {
   const [current, setCurrent] = useState(startIndex);
 
   const prev = (e) => { e.stopPropagation(); setCurrent((c) => (c - 1 + images.length) % images.length); };
@@ -210,30 +224,25 @@ const ImageLightbox = ({ images, startIndex, onClose }) => {
       if (e.key === "ArrowLeft") setCurrent((c) => (c - 1 + images.length) % images.length);
       if (e.key === "ArrowRight") setCurrent((c) => (c + 1) % images.length);
       if (e.key === "Escape") onClose();
+      e.stopPropagation();
     };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
+    window.addEventListener("keydown", handleKey, true);
+    return () => window.removeEventListener("keydown", handleKey, true);
   }, [images.length, onClose]);
 
   return (
-    <motion.div
-      className="pj-lightbox"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={onClose}
-    >
+    <motion.div className="pj-lightbox" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
       <motion.div
         className="pj-lightbox-inner"
         onClick={(e) => e.stopPropagation()}
-        initial={{ scale: 0.88, opacity: 0, y: 20 }}
+        initial={{ scale: 0.92, opacity: 0, y: 16 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.88, opacity: 0, y: 20 }}
-        transition={{ type: "spring", stiffness: 320, damping: 28 }}
+        exit={{ scale: 0.92, opacity: 0, y: 16 }}
+        transition={{ duration: 0.5, ease: EASE }}
       >
-        <button className="pj-lightbox-close" onClick={onClose}>✕</button>
+        <button className="pj-lightbox-close" onClick={onClose} aria-label={labels.close}><FaTimes /></button>
         <div className="pj-lightbox-stage">
-          {images.length > 1 && <button className="pj-lightbox-nav pj-lightbox-nav--prev" onClick={prev}>‹</button>}
+          {images.length > 1 && <button className="pj-lightbox-nav pj-lightbox-nav--prev" onClick={prev} aria-label={labels.prev}><FaChevronLeft /></button>}
           <AnimatePresence mode="wait">
             <motion.img
               key={current}
@@ -243,15 +252,15 @@ const ImageLightbox = ({ images, startIndex, onClose }) => {
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -30 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
+              transition={{ duration: 0.3, ease: EASE }}
             />
           </AnimatePresence>
-          {images.length > 1 && <button className="pj-lightbox-nav pj-lightbox-nav--next" onClick={next}>›</button>}
+          {images.length > 1 && <button className="pj-lightbox-nav pj-lightbox-nav--next" onClick={next} aria-label={labels.next}><FaChevronRight /></button>}
         </div>
         {images.length > 1 && (
           <div className="pj-lightbox-dots">
             {images.map((_, i) => (
-              <button key={i} className={`pj-lightbox-dot ${i === current ? "pj-lightbox-dot--active" : ""}`} onClick={(e) => { e.stopPropagation(); setCurrent(i); }} />
+              <button key={i} className={`pj-lightbox-dot ${i === current ? "pj-lightbox-dot--active" : ""}`} onClick={(e) => { e.stopPropagation(); setCurrent(i); }} aria-label={`${i + 1}`} />
             ))}
           </div>
         )}
@@ -262,38 +271,54 @@ const ImageLightbox = ({ images, startIndex, onClose }) => {
 };
 
 /* =======================================================
-   MODAL PROJET
+   MODAL PROJET (avec navigation précédent / suivant)
 ======================================================= */
-const ProjectDetailsModal = ({ project, onClose }) => {
+const ProjectDetailsModal = ({ project, onClose, onPrev, onNext, lang, labels }) => {
   const [lightboxIndex, setLightboxIndex] = useState(null);
+
+  useEffect(() => {
+    if (!project) return undefined;
+    const handleKey = (e) => {
+      if (lightboxIndex !== null) return;
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowLeft" && onPrev) onPrev();
+      if (e.key === "ArrowRight" && onNext) onNext();
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [project, lightboxIndex, onClose, onPrev, onNext]);
+
   if (!project) return null;
 
   const { icon, gradient } = getVisuals(project.categories);
+  const { title, description } = localized(project, lang);
   const coverImage = project.image || (project.images && project.images[0]);
   const allImages = project.images || (project.image ? [project.image] : []);
 
   return (
     <>
-      <motion.div
-        className="pj-overlay"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-      >
+      <motion.div className="pj-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
         <motion.div
+          key={project.id}
           className="pj-modal"
-          initial={{ scale: 0.92, y: 30, opacity: 0 }}
+          initial={{ scale: 0.94, y: 24, opacity: 0 }}
           animate={{ scale: 1, y: 0, opacity: 1 }}
-          exit={{ scale: 0.92, y: 30, opacity: 0 }}
-          transition={{ type: "spring", stiffness: 280, damping: 26 }}
+          exit={{ scale: 0.94, y: 24, opacity: 0 }}
+          transition={{ duration: 0.55, ease: EASE }}
           onClick={(e) => e.stopPropagation()}
+          role="dialog"
+          aria-modal="true"
+          aria-label={title}
         >
-          <button className="pj-modal-close" onClick={onClose}>✕</button>
+          <button className="pj-modal-close" onClick={onClose} aria-label={labels.close}><FaTimes /></button>
+
+          {onPrev && <button className="pj-modal-nav pj-modal-nav--prev" onClick={onPrev} aria-label={labels.prev}><FaChevronLeft /></button>}
+          {onNext && <button className="pj-modal-nav pj-modal-nav--next" onClick={onNext} aria-label={labels.next}><FaChevronRight /></button>}
+
           <div className="pj-modal-hero">
             {coverImage ? (
               <>
-                <img src={coverImage} alt={project.title} className="pj-modal-cover" />
+                <img src={coverImage} alt={title} className="pj-modal-cover" />
                 <div className="pj-modal-cover-overlay" />
                 <span className="pj-modal-icon pj-modal-icon--over">{icon}</span>
               </>
@@ -303,44 +328,49 @@ const ProjectDetailsModal = ({ project, onClose }) => {
               </div>
             )}
           </div>
+
           <div className="pj-modal-body">
             <p className="pj-modal-cat">{project.categories.join(" · ")}</p>
-            <h3 className="pj-modal-title">{project.title}</h3>
-            <p className="pj-modal-desc">{project.description}</p>
+            <h3 className="pj-modal-title">{title}</h3>
+            <p className="pj-modal-desc">{description}</p>
             <div className="pj-accent-line" />
+
             {allImages.length > 1 && (
               <div className="pj-modal-section">
-                <p className="pj-modal-label">Aperçus</p>
+                <p className="pj-modal-label">{labels.previews}</p>
                 <div className="pj-gallery">
                   {allImages.map((img, index) => (
-                    <motion.div key={index} className="pj-gallery-item" whileHover={{ scale: 1.04 }} transition={{ type: "spring", stiffness: 300, damping: 20 }} onClick={() => setLightboxIndex(index)}>
-                      <img src={img} alt={`preview-${index}`} className="pj-gallery-img" />
-                      <div className="pj-gallery-overlay"><span className="pj-gallery-zoom">🔍</span></div>
+                    <motion.div key={index} className="pj-gallery-item" whileHover={{ scale: 1.04 }} transition={{ duration: 0.35, ease: EASE }} onClick={() => setLightboxIndex(index)}>
+                      <img src={img} alt={`preview-${index}`} className="pj-gallery-img" loading="lazy" />
+                      <div className="pj-gallery-overlay"><span className="pj-gallery-zoom"><FaSearchPlus /></span></div>
                     </motion.div>
                   ))}
                 </div>
               </div>
             )}
+
             <div className="pj-modal-section">
-              <p className="pj-modal-label">Technologies</p>
+              <p className="pj-modal-label">{labels.technologies}</p>
               <div className="pj-tags">
                 {project.tags.map((tag, i) => <TechTag key={i} tag={tag} />)}
               </div>
             </div>
+
             <div className="pj-modal-footer">
               {project.github && (
-                <a href={project.github} target="_blank" rel="noreferrer" className="pj-btn pj-btn-ghost">💻 GitHub</a>
+                <a href={project.github} target="_blank" rel="noreferrer" className="pj-btn pj-btn-ghost"><FaGithub /> {labels.github}</a>
               )}
               {project.demo && (
-                <a href={project.demo} target="_blank" rel="noreferrer" className="pj-btn pj-btn-primary">🚀 Démo live</a>
+                <a href={project.demo} target="_blank" rel="noreferrer" className="pj-btn pj-btn-primary"><FaExternalLinkAlt /> {labels.demoLive}</a>
               )}
             </div>
           </div>
         </motion.div>
       </motion.div>
+
       <AnimatePresence>
         {lightboxIndex !== null && (
-          <ImageLightbox images={allImages} startIndex={lightboxIndex} onClose={() => setLightboxIndex(null)} />
+          <ImageLightbox images={allImages} startIndex={lightboxIndex} onClose={() => setLightboxIndex(null)} labels={labels} />
         )}
       </AnimatePresence>
     </>
@@ -348,35 +378,27 @@ const ProjectDetailsModal = ({ project, onClose }) => {
 };
 
 /* =======================================================
-   CARD
+   CARTE PROJET
 ======================================================= */
-const ProjectCard = ({ project, index, onClick }) => {
+const ProjectCard = ({ project, index, onClick, lang, labels }) => {
   const { icon, gradient } = getVisuals(project.categories);
-  const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect(); } },
-      { threshold: 0.12 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, []);
+  const { title, description } = localized(project, lang);
 
   return (
-    <motion.div
-      ref={ref}
-      className={`pj-card ${visible ? "pj-card--visible" : ""}`}
-      style={{ transitionDelay: `${index * 80}ms` }}
+    <Reveal
+      className="pj-card"
+      delay={(index % 3) * 0.08}
+      amount={0.25}
       whileHover={{ y: -6 }}
-      transition={{ type: "spring", stiffness: 300, damping: 22 }}
       onClick={() => onClick(project)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(project); } }}
     >
       <div className="pj-card-img">
         {project.image ? (
           <>
-            <img src={project.image} alt={project.title} className="pj-real-img" />
+            <img src={project.image} alt={title} className="pj-real-img" loading="lazy" width="1400" height="700" />
             <div className="pj-img-overlay" />
           </>
         ) : (
@@ -390,140 +412,162 @@ const ProjectCard = ({ project, index, onClick }) => {
         <div className="pj-card-icon-row">
           <span className="pj-card-icon">{icon}</span>
         </div>
-        <h3 className="pj-card-title">{project.title}</h3>
-        <p className="pj-card-desc">{project.description}</p>
+        <h3 className="pj-card-title">{title}</h3>
+        <p className="pj-card-desc">{description}</p>
         <div className="pj-tags">
           {project.tags.map((tag, i) => <TechTag key={i} tag={tag} />)}
         </div>
         <div className="pj-card-actions">
-          {/* Bouton GitHub uniquement sur le projet Pharma (id 3) */}
           {project.id === 3 && project.github && (
             <a href={project.github} target="_blank" rel="noreferrer" className="pj-btn pj-btn-ghost" onClick={(e) => e.stopPropagation()}>
-              💻 GitHub
+              <FaGithub /> {labels.github}
             </a>
           )}
           {project.demo && (
             <a href={project.demo} target="_blank" rel="noreferrer" className="pj-btn pj-btn-primary" onClick={(e) => e.stopPropagation()}>
-              🚀 Démo
+              <FaExternalLinkAlt /> {labels.demo}
             </a>
           )}
           <button className="pj-btn pj-btn-outline" onClick={(e) => { e.stopPropagation(); onClick(project); }}>
-            👁 Détails
+            <FaEye /> {labels.details}
           </button>
         </div>
       </div>
-    </motion.div>
+    </Reveal>
   );
-};
-
-/* =======================================================
-   ANIMATIONS D'ENTRÉE — variants Framer Motion
-======================================================= */
-const sectionVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.45, ease: "easeOut" } },
-};
-
-const titleVariants = {
-  hidden: { opacity: 0, y: 28, scale: 0.96 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.65, ease: [0.22, 0.61, 0.36, 1], delay: 0.08 } },
-};
-
-const subtitleVariants = {
-  hidden: { opacity: 0, y: 18 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: "easeOut", delay: 0.22 } },
-};
-
-const lineVariants = {
-  hidden: { scaleX: 0, opacity: 0 },
-  visible: { scaleX: 1, opacity: 1, transition: { duration: 0.75, ease: [0.22, 0.61, 0.36, 1], delay: 0.15 } },
-};
-
-const arrowVariants = {
-  hidden: { opacity: 0, scale: 0.55, y: -8 },
-  visible: { opacity: 0.75, scale: 1, y: 0, transition: { duration: 0.45, ease: "backOut", delay: 0.38 } },
 };
 
 /* =======================================================
    COMPOSANT PRINCIPAL
 ======================================================= */
+const HASH_PREFIX = "#projects/";
+
+const readSlugFromHash = () => {
+  const h = window.location.hash || "";
+  return h.startsWith(HASH_PREFIX) ? decodeURIComponent(h.slice(HASH_PREFIX.length)) : null;
+};
+
 const Projects = () => {
+  const { t, lang } = useLang();
+  const labels = t.projects;
+
   const [projects, setProjects] = useState([]);
-  const [selected, setSelected] = useState(null);
-  const [mounted, setMounted] = useState(false);
+  const [filter, setFilter] = useState("all");
+  const [selectedSlug, setSelectedSlug] = useState(null);
   const gridRef = useRef(null);
 
-  // Déclenche les animations dès le montage du composant (changement d'onglet inclus)
+  /* Chargement des données */
   useEffect(() => {
-    setMounted(false);
-    const t = setTimeout(() => setMounted(true), 50);
-    return () => clearTimeout(t);
-  }, []);
-
-  useEffect(() => {
-    fetch("/data/projects.json")
+    fetch(`${process.env.PUBLIC_URL}/data/projects.json`)
       .then((res) => res.json())
       .then((data) => setProjects(data))
       .catch((error) => console.error("Erreur chargement JSON :", error));
   }, []);
 
-  const scrollToGrid = () => {
-    gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
+  /* Deep-link : #projects/<slug> ouvre directement la fiche */
+  useEffect(() => {
+    const sync = () => setSelectedSlug(readSlugFromHash());
+    sync();
+    window.addEventListener("hashchange", sync);
+    return () => window.removeEventListener("hashchange", sync);
+  }, []);
+
+  const categories = useMemo(() => {
+    const set = new Set();
+    projects.forEach((p) => p.categories.forEach((c) => set.add(c)));
+    return ["all", ...Array.from(set)];
+  }, [projects]);
+
+  const visible = useMemo(
+    () => (filter === "all" ? projects : projects.filter((p) => p.categories.includes(filter))),
+    [projects, filter]
+  );
+
+  const selectedIndex = visible.findIndex((p) => p.slug === selectedSlug);
+  const selected = selectedIndex >= 0 ? visible[selectedIndex] : projects.find((p) => p.slug === selectedSlug) || null;
+
+  const openProject = useCallback((project) => {
+    window.history.replaceState(null, "", HASH_PREFIX + project.slug);
+    setSelectedSlug(project.slug);
+  }, []);
+
+  const closeProject = useCallback(() => {
+    window.history.replaceState(null, "", "#projects");
+    setSelectedSlug(null);
+  }, []);
+
+  const goPrev = selectedIndex > 0 ? () => openProject(visible[selectedIndex - 1]) : null;
+  const goNext = selectedIndex >= 0 && selectedIndex < visible.length - 1 ? () => openProject(visible[selectedIndex + 1]) : null;
+
+  /* Bloquer le scroll de la page quand une fiche est ouverte */
+  useEffect(() => {
+    document.body.style.overflow = selected ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [selected]);
+
+  const scrollToGrid = () => gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   return (
-    <motion.section
-      className="pj-section"
-      variants={sectionVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      {/* HEADER avec animations d'entrée en cascade */}
-      <motion.div
-        className="pj-header"
-        initial="hidden"
-        animate={mounted ? "visible" : "hidden"}
-      >
-        {/* Ligne décorative animée */}
-        <motion.div className="pj-header-line" variants={lineVariants} />
+    <section className="pj-section">
+      {/* HEADER */}
+      <div className="pj-header">
+        <Reveal as="span" className="section-kicker" distance={12} blur={4}>04</Reveal>
+        <WordReveal as="h2" className="pj-title" text={labels.title} accent={labels.accent} accentTag="em" />
+        <Reveal as="p" className="pj-subtitle" distance={16} blur={4} delay={0.1}>{labels.subtitle}</Reveal>
 
-        <motion.h2 className="pj-title" variants={titleVariants}>
-          Mes <em>Projets</em>
-        </motion.h2>
-
-        <motion.p className="pj-subtitle" variants={subtitleVariants}>
-          Quelques réalisations modernes et responsive.
-        </motion.p>
+        {/* FILTRES */}
+        <Reveal className="pj-filters" distance={14} blur={4} delay={0.15} role="tablist" aria-label="Filtres">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              role="tab"
+              aria-selected={filter === cat}
+              className={`pj-filter ${filter === cat ? "pj-filter--active" : ""}`}
+              onClick={() => setFilter(cat)}
+            >
+              {cat === "all" ? labels.all : cat}
+            </button>
+          ))}
+        </Reveal>
 
         <motion.button
           className="pj-scroll-arrow"
           onClick={scrollToGrid}
-          aria-label="Voir les projets"
-          variants={arrowVariants}
-          whileHover={{ scale: 1.15, opacity: 1 }}
-          whileTap={{ scale: 0.88 }}
+          aria-label={labels.seeProjects}
+          whileHover={{ scale: 1.1, opacity: 1 }}
+          whileTap={{ scale: 0.9 }}
         >
           <svg className="pj-arrow-svg" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="16" cy="16" r="15.5" stroke="currentColor" strokeOpacity="0.25" />
             <path d="M10 13.5L16 19.5L22 13.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </motion.button>
-      </motion.div>
-
-      {/* GRID */}
-      <div className="pj-grid" ref={gridRef}>
-        {projects.map((project, i) => (
-          <ProjectCard key={project.id} project={project} index={i} onClick={setSelected} />
-        ))}
       </div>
 
-      {/* MODAL */}
+      {/* GRILLE */}
+      <div className="pj-grid" ref={gridRef}>
+        <AnimatePresence mode="popLayout">
+          {visible.map((project, i) => (
+            <ProjectCard key={project.slug} project={project} index={i} onClick={openProject} lang={lang} labels={labels} />
+          ))}
+        </AnimatePresence>
+        {projects.length > 0 && visible.length === 0 && <p className="pj-empty">{labels.empty}</p>}
+      </div>
+
+      {/* MODALE */}
       <AnimatePresence>
         {selected && (
-          <ProjectDetailsModal project={selected} onClose={() => setSelected(null)} />
+          <ProjectDetailsModal
+            project={selected}
+            onClose={closeProject}
+            onPrev={goPrev}
+            onNext={goNext}
+            lang={lang}
+            labels={labels}
+          />
         )}
       </AnimatePresence>
-    </motion.section>
+    </section>
   );
 };
 

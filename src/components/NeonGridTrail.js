@@ -1,5 +1,15 @@
 import { useEffect, useRef } from "react";
 
+/*
+ * Grille lumineuse qui suit la souris (fond global).
+ * Version optimisée :
+ *  - cellule trouvée par calcul d'index (plus de recherche linéaire à chaque mouvement) ;
+ *  - seules les cellules actives sont dessinées ; quand il n'y en a plus, la boucle ne
+ *    fait plus rien (0 % CPU au repos) ;
+ *  - fondu basé sur le temps écoulé, donc identique à 60 Hz et 120 Hz ;
+ *  - la boucle est bien arrêtée quand le thème change (avant, chaque bascule
+ *    ajoutait une boucle supplémentaire).
+ */
 export default function NeonGridTrail({ darkMode }) {
   const canvasRef = useRef(null);
 
@@ -7,104 +17,78 @@ export default function NeonGridTrail({ darkMode }) {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
 
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
+    const SIZE = 80;
+    const color = darkMode ? "231, 144, 90" : "26, 26, 26"; // orange en sombre, neutre en clair
+    let width = 0, height = 0, cols = 0, rows = 0;
+    let grid = [];
+    const active = new Set();
 
-    const squareSize = 80;
-    const grid = [];
-    let mouse = { x: -9999, y: -9999 };
-
-    function initGrid() {
-      grid.length = 0;
-      for (let x = 0; x < width; x += squareSize) {
-        for (let y = 0; y < height; y += squareSize) {
-          grid.push({ x, y, alpha: 0, fading: false, lastTouched: 0 });
-        }
-      }
-    }
-
-    function getCellAt(x, y) {
-      return grid.find(
-        (cell) =>
-          x >= cell.x &&
-          x < cell.x + squareSize &&
-          y >= cell.y &&
-          y < cell.y + squareSize
-      );
-    }
-
-    const handleResize = () => {
+    const resize = () => {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
-      initGrid();
-    };
-    window.addEventListener("resize", handleResize);
-
-    const handleMouseMove = (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-
-      const cell = getCellAt(mouse.x, mouse.y);
-      if (cell && cell.alpha === 0) {
-        cell.alpha = 1;
-        cell.lastTouched = Date.now();
-        cell.fading = false;
-      }
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-
-    function drawGrid() {
+      cols = Math.ceil(width / SIZE);
+      rows = Math.ceil(height / SIZE);
+      grid = Array.from({ length: cols * rows }, (_, i) => ({
+        x: (i % cols) * SIZE,
+        y: Math.floor(i / cols) * SIZE,
+        alpha: 0,
+        touched: 0,
+      }));
+      active.clear();
       ctx.clearRect(0, 0, width, height);
-      const now = Date.now();
+    };
 
-      for (let i = 0; i < grid.length; i++) {
-        const cell = grid[i];
+    const onMove = (e) => {
+      const c = Math.floor(e.clientX / SIZE);
+      const r = Math.floor(e.clientY / SIZE);
+      if (c < 0 || r < 0 || c >= cols || r >= rows) return;
+      const cell = grid[r * cols + c];
+      if (cell.alpha === 0) cell.alpha = 0.5;
+      cell.touched = performance.now();
+      active.add(cell);
+    };
 
-        if (cell.alpha > 0 && !cell.fading && now - cell.lastTouched > 500) {
-          cell.fading = true;
-        }
+    let raf = 0;
+    let last = performance.now();
+    let dirty = false;
 
-        if (cell.fading) {
-          cell.alpha -= 0.02;
-          if (cell.alpha <= 0) {
-            cell.alpha = 0;
-            cell.fading = false;
-          }
-        }
+    const draw = (now) => {
+      raf = requestAnimationFrame(draw);
+      const dt = Math.min(64, now - last);
+      last = now;
 
-        if (cell.alpha > 0) {
-          const centerX = cell.x + squareSize / 2;
-          const centerY = cell.y + squareSize / 2;
-
-          const gradient = ctx.createRadialGradient(
-            centerX,
-            centerY,
-            5,
-            centerX,
-            centerY,
-            squareSize
-          );
-
-          // Couleur selon le thème
-          const color = darkMode ? "0, 255, 204" : "155, 89, 182"; // cyan ou violet
-          gradient.addColorStop(0, `rgba(${color}, ${cell.alpha})`);
-          gradient.addColorStop(1, `rgba(${color}, 0)`);
-
-          ctx.strokeStyle = gradient;
-          ctx.lineWidth = 1.3;
-          ctx.strokeRect(cell.x + 0.5, cell.y + 0.5, squareSize - 1, squareSize - 1);
-        }
+      if (active.size === 0) {
+        if (dirty) { ctx.clearRect(0, 0, width, height); dirty = false; }
+        return;
       }
 
-      requestAnimationFrame(drawGrid);
-    }
+      ctx.clearRect(0, 0, width, height);
+      dirty = true;
+      ctx.lineWidth = 1.3;
 
-    initGrid();
-    drawGrid();
+      active.forEach((cell) => {
+        if (now - cell.touched > 500) cell.alpha -= dt * 0.0012; // ≈ 0,02 par image à 60 Hz
+        if (cell.alpha <= 0) { cell.alpha = 0; active.delete(cell); return; }
+
+        const cx = cell.x + SIZE / 2;
+        const cy = cell.y + SIZE / 2;
+        const g = ctx.createRadialGradient(cx, cy, 5, cx, cy, SIZE);
+        g.addColorStop(0, `rgba(${color}, ${cell.alpha})`);
+        g.addColorStop(1, `rgba(${color}, 0)`);
+        ctx.strokeStyle = g;
+        ctx.strokeRect(cell.x + 0.5, cell.y + 0.5, SIZE - 1, SIZE - 1);
+      });
+    };
+
+    resize();
+    window.addEventListener("resize", resize);
+    window.addEventListener("mousemove", onMove, { passive: true });
+    raf = requestAnimationFrame(draw);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
-      window.removeEventListener("mousemove", handleMouseMove);
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("mousemove", onMove);
     };
   }, [darkMode]);
 
@@ -117,7 +101,7 @@ export default function NeonGridTrail({ darkMode }) {
     width: "100%",
     height: "100%",
     pointerEvents: "none",
-    backgroundColor: darkMode ? "#000" : "#fff",
+    backgroundColor: darkMode ? "#0F0F0F" : "#F0F0F0",
     display: "block",
   };
 
